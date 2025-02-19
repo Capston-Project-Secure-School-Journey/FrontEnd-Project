@@ -6,7 +6,18 @@ definePageMeta({
   middleware: "auth-school",
   name: pageName,
 });
+
+const today = ref();
+
+onMounted(() => {});
 </script>
 <template>
-  <div>{{ pageName }}</div>
+  <v-container
+    ><v-calendar
+      class="w-100 h-100"
+      v-model="today"
+      color="primary"
+      type="month"
+    ></v-calendar
+  ></v-container>
 </template>
