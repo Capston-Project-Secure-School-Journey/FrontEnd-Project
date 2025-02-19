@@ -73,3 +73,17 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Nuxthub deployment
+```
+npm run build
+```
+
+```
+npx nuxthub deploy
+```
+
+```
+npx nuxthub deploy --no-build
+```
+
