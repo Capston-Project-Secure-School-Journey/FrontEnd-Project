@@ -58,6 +58,11 @@ class ApiAdmin {
           ].includes(response.status)
         ) {
           console.log(`Log status code ${response.status}`);
+          return {
+            statusCode: response._data.statuscode,
+            message: response._data.message,
+            errors: response._data.errors,
+          };
         }
       },
     };

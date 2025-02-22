@@ -11,4 +11,5 @@ export interface ApiError {
 export interface ErrorEntity {
   statuscode?: number;
   message?: string;
+  errors?: object;
 }

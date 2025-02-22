@@ -1,23 +1,24 @@
 export interface AdminSchoolCommonEntity {
   id: string;
-  schooltype: number;
+  schoolType: number;
   name: string;
   email: string;
-  phonenumber: string;
+  phoneNumber: string;
   // images: string;
 }
 
 export interface AdminSchoolEntity {
   id?: string;
-  schooltype?: number;
-  name?: string;
-  schooldescription?: string;
+  schoolType?: number;
+  schoolName?: string;
+  schoolDescription?: string;
   address?: string;
-  morningstarttime?: string;
-  morningendtime?: string;
-  afternoonendtime?: string;
-  afternoonstarttime?: string;
+  morningStartTime?: string;
+  morningEndTime?: string;
+  afternoonEndTime?: string;
+  afternoonStartTime?: string;
   email?: string;
-  phonenumber?: string;
-  // images: string;
+  phoneNumber?: string;
+  schoolAdminUserName?: string;
+  schoolAdminPassword?: string;
 }

@@ -43,7 +43,11 @@ class ApiSchool {
           navigateTo("/404");
         } else if (response.status === StatusCode.UNAUTHENTICATED) {
           console.log(`Log status code ${StatusCode.UNAUTHENTICATED}`);
-          // toastError("Error", response._data.message);
+
+          return {
+            statusCode: response._data.statuscode,
+            message: response._data.message,
+          };
         } else if (
           [
             StatusCode.UNPROCESSABLE_CONTENT,

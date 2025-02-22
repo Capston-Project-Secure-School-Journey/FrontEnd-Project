@@ -9,7 +9,7 @@ const props = defineProps<SnackbarProps>();
 const display = toRef(props.display);
 </script>
 <template>
-  <v-snackbar v-model="display" :location="props.position">
+  <v-snackbar v-bind="$attrs" v-model="display" :location="props.position">
     {{ props.message }}
     <template v-slot:actions>
       <v-btn color="pink" variant="text" @click="display = false">

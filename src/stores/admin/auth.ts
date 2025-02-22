@@ -1,7 +1,12 @@
 import { defineStore } from "pinia";
 import { loginApi } from "~/api/admin/auth";
-import { ADMIN_LAST_WORKSPACE, ADMIN_TOKEN } from "~/constants/authentication";
-import { ADMIN_ROUTE } from "~/constants/route";
+import {
+  ADMIN_LAST_WORKSPACE,
+  ADMIN_TOKEN,
+  SCHOOL_TOKEN,
+  USER_TYPE_ENUM,
+} from "~/constants/authentication";
+import { ADMIN_ROUTE, SCHOOL_ROUTE } from "~/constants/route";
 import type { AdminLoginEntity } from "~/entities/admin/auth";
 import type { ErrorData } from "~/entities/api-error";
 
@@ -37,11 +42,20 @@ export const AdminAuthStore = defineStore("AdminAuthStore", {
 
       await loginApi(schoolEntity)
         .then((result) => {
-          const redirectUrl = lastWorkspace ?? ADMIN_ROUTE.DASHBOARD;
-          console.log(result);
+          const userType = result.userType;
+          if (userType === USER_TYPE_ENUM.ADMIN) {
+            const redirectUrl = lastWorkspace ?? ADMIN_ROUTE.DASHBOARD;
 
-          setToken(ADMIN_TOKEN, result.token);
-          navigateTo(redirectUrl, { external: true });
+            setToken(ADMIN_TOKEN, result.token);
+
+            navigateTo(redirectUrl, { external: true });
+          } else if (userType === USER_TYPE_ENUM.SCHOOL_ADMIN) {
+            const redirectUrl = lastWorkspace ?? SCHOOL_ROUTE.DASHBOARD;
+
+            setToken(SCHOOL_TOKEN, result.token);
+
+            navigateTo(redirectUrl, { external: true });
+          }
         })
         .catch((err) => {
           this.$state.errors = handleApiErrors(err);

@@ -18,8 +18,7 @@ const navigate = (screen: string) => {
     >
       <h2 class="w-full text-center">Đăng nhập</h2>
       <v-row class="d-flex ga-2">
-        <v-btn :onclick="() => navigate(SCHOOL_ROUTE.LOGIN)">Trường học</v-btn>
-        <v-btn :onclick="() => navigate(ADMIN_ROUTE.LOGIN)">Admin</v-btn>
+        <v-btn :onclick="() => navigate(SCHOOL_ROUTE.LOGIN)">Admin</v-btn>
       </v-row>
     </v-card>
   </v-container>
