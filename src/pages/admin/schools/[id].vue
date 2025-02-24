@@ -38,7 +38,7 @@ onMounted(async () => {
   <v-container>
     <v-snackbar
       id="updateSuccessForm"
-      v-model="updateStatus as boolean"
+      v-model="updateStatus"
       :location="'top right'"
     >
       Cập nhật dữ liệu thành công

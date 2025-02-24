@@ -41,14 +41,14 @@ onMounted(async () => {
       @submit="submit"
     />
     <v-snackbar
-      id="updateSuccessForm"
-      v-model="updateStatus as boolean"
+      id="updateSuccessTeacherForm"
+      v-model="updateStatus"
       :location="'top right'"
     >
       Cập nhật dữ liệu thành công
       <template v-slot:actions>
         <v-btn color="pink" variant="text" @click="updateStatus = false">
-          Close
+          Đóng
         </v-btn>
       </template>
     </v-snackbar>
