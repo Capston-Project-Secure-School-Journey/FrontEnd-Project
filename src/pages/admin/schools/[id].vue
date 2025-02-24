@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { AdminSchoolStore } from "~/stores/admin/school";
-import { MODE_FORM_CREATE, MODE_FORM_UPDATE } from "~/constants/common";
+import { MODE_FORM_UPDATE } from "~/constants/common";
 import SchoolForm from "~/components/admin/SchoolForm.vue";
+import type { AdminSchoolEntity } from "~/entities/admin/school";
 
 const pageName: string = "Thông tin chi tiết trường học";
 
@@ -16,17 +17,42 @@ const route = useRoute();
 const schoolId = route.params.id;
 const errors = computed(() => adminSchoolStore.errors);
 const isLoading = computed(() => adminSchoolStore.isLoading);
+const isSucceed = computed(() => adminSchoolStore.isSucceed);
 const school = computed(() => adminSchoolStore.school);
+const updateStatus = ref<boolean>(false);
+
+const submit = async (data: AdminSchoolEntity) => {
+  updateStatus.value = false;
+  await adminSchoolStore.updateSchool(schoolId, data);
+
+  if (!isLoading.value && isSucceed.value) {
+    updateStatus.value = true;
+  }
+};
+
 onMounted(async () => {
   await adminSchoolStore.getDetailSchool(schoolId);
 });
 </script>
 <template>
   <v-container>
+    <v-snackbar
+      id="updateSuccessForm"
+      v-model="updateStatus as boolean"
+      :location="'top right'"
+    >
+      Cập nhật dữ liệu thành công
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="updateStatus = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <SchoolForm
       v-if="!isLoading && school"
       :mode="MODE_FORM_UPDATE"
       :school="school"
+      @submit="submit"
     />
   </v-container>
 </template>

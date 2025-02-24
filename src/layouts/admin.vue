@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { USER_TYPE_ENUM } from "~/constants/authentication";
 import { ADMIN_MENU } from "~/constants/route";
 import { AdminAuthStore } from "~/stores/admin/auth";
 
@@ -8,7 +9,7 @@ const route = useRoute();
 const isOpen = ref<boolean>(true);
 
 const logout = () => {
-  storeAdmin.logout();
+  storeAdmin.logout(USER_TYPE_ENUM.ADMIN);
 };
 </script>
 <template>

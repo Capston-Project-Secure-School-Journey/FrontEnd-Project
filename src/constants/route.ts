@@ -35,6 +35,7 @@ export const SCHOOL_ROUTE = {
   CLASSES: "/classes",
   DRIVERS: "/drivers",
   TEACHERS: "/teachers",
+  CREATE_TEACHER: "/teachers/create",
   SCHEDULE: "/schedule",
 };
 

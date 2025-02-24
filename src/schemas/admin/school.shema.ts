@@ -5,7 +5,7 @@ import {
   MORNING_TIME_REGEX,
   PASSWORD_REGEX,
   PHONE_REGEX,
-} from "~/constants/regex-comon";
+} from "~/constants/regex-common";
 
 export const baseSchoolSchema = zod.object({
   name: zod

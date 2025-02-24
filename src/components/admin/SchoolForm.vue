@@ -21,6 +21,8 @@ const props = withDefaults(defineProps<SchoolFormProps>(), {
   mode: MODE_FORM_CREATE,
 });
 
+const emits = defineEmits(["submit"]);
+
 const { defineField, setFieldValue, handleSubmit, errors } = useForm({
   validationSchema:
     props.mode === MODE_FORM_CREATE ? createSchoolSchema : updateSchoolSchema,
@@ -29,7 +31,6 @@ const adminSchoolStore = AdminSchoolStore();
 const isLoading = computed(() => adminSchoolStore.isLoading);
 const isSucceed = computed(() => adminSchoolStore.isSucceed);
 const errorsApi = computed(() => adminSchoolStore.errors);
-const updateStatus = ref<boolean>(false);
 const display = ref<boolean>(false);
 
 const [name] = defineField("name");
@@ -47,14 +48,6 @@ const [schoolAdminUserName] = defineField("schoolAdminUserName");
 const [schoolAdminPassword] = defineField("schoolAdminPassword");
 
 const hasApiKey = ref<boolean>(true);
-
-onMounted(async () => {
-  if (props.mode === MODE_FORM_CREATE) {
-    setupForCreate();
-  } else {
-    setupForUpdate();
-  }
-});
 
 const setupForCreate = () => {
   setFieldValue("schoolType", schoolTypeSelected.value.id);
@@ -108,12 +101,7 @@ const onSubmit = handleSubmit(async () => {
       display.value = true;
     }
   } else {
-    updateStatus.value = false;
-    await adminSchoolStore.updateSchool(props.school?.id, entity);
-
-    if (!isLoading.value && isSucceed.value) {
-      updateStatus.value = true;
-    }
+    emits("submit", entity);
   }
 });
 
@@ -124,6 +112,14 @@ const schoolTypeOptionChange = (data: OptionSelect) => {
 const getAddress = (data: string) => {
   address.value = data;
 };
+
+onMounted(async () => {
+  if (props.mode === MODE_FORM_CREATE) {
+    setupForCreate();
+  } else {
+    setupForUpdate();
+  }
+});
 </script>
 <template>
   <v-card class="w-100 d-flex flex-column pa-2 ga-4">
@@ -281,11 +277,6 @@ const getAddress = (data: string) => {
       id="toastGGMapAPI"
       :display="!hasApiKey"
       message="Vui lòng cài đặt GOOGLE MAP API KEY"
-    />
-    <Toast
-      id="updateSuccessForm"
-      :display="updateStatus"
-      message="Cập nhật dữ liệu thành công"
     />
   </v-card>
 </template>

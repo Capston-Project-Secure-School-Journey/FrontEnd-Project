@@ -1,8 +1,6 @@
 import type { AdminSchoolEntity } from "~/entities/admin/school";
 
 export const getListSchoolApi = (param: Object): Promise<any> => {
-  console.log(param);
-
   return apiAdmin.get("/schools", param);
 };
 

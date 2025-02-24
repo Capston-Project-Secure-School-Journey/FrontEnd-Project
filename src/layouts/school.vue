@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { USER_TYPE_ENUM } from "~/constants/authentication";
+import { USER_TYPE_NAME } from "~/constants/authentication";
 import { SCHOOL_MENU } from "~/constants/route";
 import type { MenuItemEntity } from "~/entities/common";
 import { SchoolAuthStore } from "~/stores/school/auth";
@@ -8,12 +10,15 @@ const schoolAuthStore = SchoolAuthStore();
 const route = useRoute();
 const isOpen = ref<boolean>(true);
 const menu = ref<MenuItemEntity[]>(SCHOOL_MENU);
-
-onBeforeMount(() => {});
+const me = computed(() => schoolAuthStore.me);
 
 const logout = () => {
-  schoolAuthStore.logout();
+  schoolAuthStore.logout(USER_TYPE_ENUM.SCHOOL_ADMIN);
 };
+
+onMounted(() => {
+  console.log(me.value);
+});
 </script>
 <template>
   <v-layout class="rounded rounded-md">
@@ -28,6 +33,8 @@ const logout = () => {
 
     <v-navigation-drawer v-model="isOpen">
       <v-list>
+        <v-list-item title="Hi Admin" subtitle="School Admin"></v-list-item>
+        <v-divider></v-divider>
         <v-list-item
           v-for="item in menu"
           :active="route.fullPath === item.url"

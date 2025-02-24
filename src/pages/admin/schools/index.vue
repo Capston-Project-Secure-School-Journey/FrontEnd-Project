@@ -4,9 +4,9 @@ import { AdminSchoolStore } from "~/stores/admin/school";
 import type { AdminSchoolCommonEntity } from "~/entities/admin/school";
 import { ADMIN_ROUTE } from "~/constants/route";
 import type { QueryParamEntity } from "~/entities/common";
+
+import { PASSWORD_REGEX } from "~/constants/regex-common";
 import { PAGE_LIMIT_DEFAULT, SORT_DIRECTION } from "~/constants/common";
-import { PASSWORD_REGEX } from "~/constants/regex-comon";
-import { meta } from "eslint-plugin-vue";
 
 const pageName: string = "Danh sách trường học";
 
@@ -139,7 +139,7 @@ onMounted(async () => {
                   PASSWORD_REGEX.test(value) ||
                   'Mật khẩu từ 8 kí tự trở lên, kết hợp số và ký hiệu.',
               ]"
-              @click:append="showPass = !showPass"
+              @click:append-inner="showPass = !showPass"
             />
           </v-card-text>
           <v-card-actions>

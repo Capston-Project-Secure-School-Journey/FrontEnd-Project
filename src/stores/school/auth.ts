@@ -8,6 +8,7 @@ import {
   USER_TYPE_ENUM,
 } from "~/constants/authentication";
 import { ADMIN_ROUTE, SCHOOL_ROUTE } from "~/constants/route";
+import type { ResponseAuthEntity } from "~/entities/admin/auth";
 import type { ErrorEntity } from "~/entities/api-error";
 import type { SchoolLoginEntity } from "~/entities/school/auth";
 
@@ -15,12 +16,14 @@ interface State {
   isLoading: Boolean;
   isSucceed: Boolean;
   errors: ErrorEntity | null;
+  me: ResponseAuthEntity;
 }
 
 const defaultState: State = {
   isLoading: false,
   isSucceed: false,
   errors: null,
+  me: {},
 };
 
 export const SchoolAuthStore = defineStore("SchoolAuthStore", {
@@ -38,15 +41,17 @@ export const SchoolAuthStore = defineStore("SchoolAuthStore", {
      */
     async login(schoolEntity: SchoolLoginEntity): Promise<any> {
       this.$state.isLoading = true;
-
+      const router = useRouter();
       await loginApi(schoolEntity)
         .then((result) => {
           const userType = result.userType;
+          this.$state.me = result as ResponseAuthEntity;
           if (userType === USER_TYPE_ENUM.ADMIN) {
             const lastWorkspace = getLastWorkspace(ADMIN_LAST_WORKSPACE);
             const redirectUrl = lastWorkspace ?? ADMIN_ROUTE.DASHBOARD;
             setToken(ADMIN_TOKEN, result.token);
             navigateTo(redirectUrl, { external: true });
+            router.push(redirectUrl);
           } else if (userType === USER_TYPE_ENUM.SCHOOL_ADMIN) {
             const lastWorkspace = getLastWorkspace(SCHOOL_LAST_WORKSPACE);
             const redirectUrl = lastWorkspace ?? SCHOOL_ROUTE.DASHBOARD;
@@ -65,10 +70,18 @@ export const SchoolAuthStore = defineStore("SchoolAuthStore", {
     /**
      * Logout
      */
-    async logout(): Promise<any> {
+    async logout(userType: number = USER_TYPE_ENUM.SCHOOL_ADMIN): Promise<any> {
       this.$state.isLoading = true;
 
-      setToken(SCHOOL_TOKEN, "");
+      switch (userType) {
+        case USER_TYPE_ENUM.SCHOOL_ADMIN:
+          setToken(SCHOOL_TOKEN, "");
+          break;
+        case USER_TYPE_ENUM.ADMIN:
+          setToken(ADMIN_TOKEN, "");
+        default:
+          break;
+      }
 
       const router = useRouter();
       await router.push("/");

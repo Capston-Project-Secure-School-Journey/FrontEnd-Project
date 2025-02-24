@@ -20,6 +20,7 @@ const { handleSubmit, errors, defineField } = useForm({
   validationSchema: schoolLoginSchema,
 });
 const display = ref<boolean>(false);
+const showPass = ref<boolean>(false);
 const errorsApi = computed(() => store.errors);
 
 const [username] = defineField("username");
@@ -70,7 +71,9 @@ const onSubmit = handleSubmit(async (values) => {
           <v-text-field
             label="Mật khẩu"
             v-model="password"
-            type="password"
+            :append-inner-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+            :type="showPass ? 'text' : 'password'"
+            @click:append-inner="showPass = !showPass"
             name="password"
             class="w-100"
             :rules="[() => errors.password || true]"

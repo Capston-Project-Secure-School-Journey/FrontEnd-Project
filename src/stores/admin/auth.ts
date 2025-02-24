@@ -7,19 +7,24 @@ import {
   USER_TYPE_ENUM,
 } from "~/constants/authentication";
 import { ADMIN_ROUTE, SCHOOL_ROUTE } from "~/constants/route";
-import type { AdminLoginEntity } from "~/entities/admin/auth";
+import type {
+  AdminLoginEntity,
+  ResponseAuthEntity,
+} from "~/entities/admin/auth";
 import type { ErrorData } from "~/entities/api-error";
 
 interface State {
   isLoading: Boolean;
   isSucceed: Boolean;
   errors: ErrorData;
+  me: ResponseAuthEntity;
 }
 
 const defaultState: State = {
   isLoading: false,
   isSucceed: false,
   errors: {},
+  me: {},
 };
 
 export const AdminAuthStore = defineStore("AdminAuthStore", {
@@ -42,6 +47,7 @@ export const AdminAuthStore = defineStore("AdminAuthStore", {
 
       await loginApi(schoolEntity)
         .then((result) => {
+          this.$state.me = result;
           const userType = result.userType;
           if (userType === USER_TYPE_ENUM.ADMIN) {
             const redirectUrl = lastWorkspace ?? ADMIN_ROUTE.DASHBOARD;
@@ -68,10 +74,18 @@ export const AdminAuthStore = defineStore("AdminAuthStore", {
     /**
      * Logout
      */
-    async logout(): Promise<any> {
+    async logout(userType: number = USER_TYPE_ENUM.SCHOOL_ADMIN): Promise<any> {
       this.$state.isLoading = true;
 
-      setToken(ADMIN_TOKEN, "");
+      switch (userType) {
+        case USER_TYPE_ENUM.SCHOOL_ADMIN:
+          setToken(SCHOOL_TOKEN, "");
+          break;
+        case USER_TYPE_ENUM.ADMIN:
+          setToken(ADMIN_TOKEN, "");
+        default:
+          break;
+      }
 
       const router = useRouter();
       await router.push("/");

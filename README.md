@@ -75,15 +75,20 @@ bun run preview
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
 ## Nuxthub deployment
-```
+```sh
 npm run build
 ```
 
-```
+```sh
 npx nuxthub deploy
 ```
 
-```
+```sh
 npx nuxthub deploy --no-build
+```
+
+- Build and deploy
+```sh
+npx nuxthub deploy --build
 ```
 

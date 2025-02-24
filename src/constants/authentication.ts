@@ -11,3 +11,11 @@ export const USER_TYPE_ENUM = {
   PARENT: 4,
   ADMIN: 5,
 };
+
+export const USER_TYPE_NAME = {
+  1: "School Admin",
+  2: "School Supervisor",
+  3: "Driver",
+  4: "Parent",
+  5: "Admin",
+};
