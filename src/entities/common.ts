@@ -1,5 +1,5 @@
 export interface OptionSelect {
-  id: number;
+  id: number | string;
   name: string;
 }
 

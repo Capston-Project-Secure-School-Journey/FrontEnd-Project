@@ -1,4 +1,5 @@
 import { SCHOOL_TOKEN } from "~/constants/authentication";
+import { SCHOOL_ROUTE } from "~/constants/route";
 import * as StatusCode from "~/constants/status-code";
 
 const config = useRuntimeConfig();
@@ -43,7 +44,7 @@ class ApiSchool {
           navigateTo("/404");
         } else if (response.status === StatusCode.UNAUTHENTICATED) {
           console.log(`Log status code ${StatusCode.UNAUTHENTICATED}`);
-
+          navigateTo(SCHOOL_ROUTE.LOGIN);
           return {
             statusCode: response._data.statuscode,
             message: response._data.message,
