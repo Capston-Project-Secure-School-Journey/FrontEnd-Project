@@ -145,7 +145,7 @@ const setupForUpdate = () => {
 const onSubmit = handleSubmit(async () => {
   const managedTeachers: ManagerTeacher[] = selectedTeacher.value.map((_) => {
     const managedTeacher: ManagerTeacher = {
-      managedTeacherId: _.id,
+      managedTeacherId: String(_.id),
     };
     return managedTeacher;
   });

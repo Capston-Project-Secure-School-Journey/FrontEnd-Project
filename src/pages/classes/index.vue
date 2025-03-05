@@ -1,5 +1,10 @@
 <script lang="ts" setup>
-import { PAGE_LIMIT_DEFAULT, SORT_DIRECTION } from "~/constants/common";
+import CopyBlock from "~/components/common/CopyBlock.vue";
+import {
+  PAGE_LIMIT_DEFAULT,
+  SORT_DIRECTION,
+  PAGE_SIZE_OPTIONS,
+} from "~/constants/common";
 import { SCHOOL_ROUTE } from "~/constants/route";
 import type { QueryParamEntity } from "~/entities/common";
 import { ClassSchoolStore } from "~/stores/school/class";
@@ -16,6 +21,10 @@ const classSchoolStore = ClassSchoolStore();
 const isLoading = computed(() => classSchoolStore.isLoading);
 const classes = computed(() => classSchoolStore.classes);
 const metaData = computed(() => classSchoolStore.metaData);
+const copyStatus = ref<{
+  status: boolean;
+  message: string;
+}>({ status: false, message: "" });
 
 const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
@@ -32,10 +41,6 @@ const headers = [
   { title: "Chi tiết", key: "actions" },
 ];
 
-const goToDetail = (id: string) => {
-  navigateTo(`${SCHOOL_ROUTE.CLASSES}/${id}`);
-};
-
 watch(
   () => queryParamEntity.value.page,
   async (newPage) => {
@@ -43,6 +48,13 @@ watch(
     await classSchoolStore.getListClass(queryParamEntity.value);
   }
 );
+
+const copyToClipboard = (data: string) => {
+  copyStatus.value = {
+    status: true,
+    message: data,
+  };
+};
 
 onMounted(async () => {
   await classSchoolStore.getListClass(queryParamEntity.value);
@@ -69,20 +81,52 @@ onMounted(async () => {
         :items="classes"
         :items-per-page="queryParamEntity.limit"
       >
+        <template v-slot:loading>
+          <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+        </template>
+
+        <template v-slot:item.id="{ item }">
+          <CopyBlock :text="item.id" @on-display="copyToClipboard" />
+        </template>
+
         <template v-slot:item.actions="{ item }">
-          <div @click="goToDetail(item.id)">
+          <a target="blank" :href="`${SCHOOL_ROUTE.CLASSES}/${item.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
-          </div>
+          </a>
         </template>
         <template v-slot:bottom>
-          <div class="text-center pt-2">
-            <v-pagination
-              v-model="queryParamEntity.page"
-              :length="Math.ceil(metaData.total / PAGE_LIMIT_DEFAULT)"
-            ></v-pagination>
+          <div class="text-center d-flex flex-row pt-2 justify-end pa-2">
+            <v-col class="ga-2">
+              <v-select
+                label="Hiển thị"
+                class="w-25"
+                :items="PAGE_SIZE_OPTIONS"
+                v-model="queryParamEntity.limit"
+              ></v-select>
+            </v-col>
+            <v-col>
+              <v-pagination
+                v-model="queryParamEntity.page"
+                class="w-100"
+                :length="Math.ceil(metaData.total / queryParamEntity.limit)"
+              >
+              </v-pagination>
+            </v-col>
           </div>
         </template>
       </v-data-table>
     </v-card>
+    <v-snackbar
+      id="copySuccess"
+      v-model="copyStatus.status"
+      :location="'top right'"
+    >
+      {{ copyStatus.message }}
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="copyStatus.status = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>

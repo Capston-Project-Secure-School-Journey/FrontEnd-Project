@@ -3,10 +3,15 @@ import { SCHOOL_TYPE } from "~/constants/school";
 import { AdminSchoolStore } from "~/stores/admin/school";
 import type { AdminSchoolCommonEntity } from "~/entities/admin/school";
 import { ADMIN_ROUTE } from "~/constants/route";
-import type { QueryParamEntity } from "~/entities/common";
-
+import type { QueryParamEntity, SnackbarProp } from "~/entities/common";
+import CopyBlock from "~/components/common/CopyBlock.vue";
 import { PASSWORD_REGEX } from "~/constants/regex-common";
-import { PAGE_LIMIT_DEFAULT, SORT_DIRECTION } from "~/constants/common";
+import {
+  PAGE_LIMIT_DEFAULT,
+  PAGE_SIZE_OPTIONS,
+  SNACKBAR_INFO_STATUS,
+  SORT_DIRECTION,
+} from "~/constants/common";
 
 const pageName: string = "Danh sách trường học";
 
@@ -69,6 +74,16 @@ const handleChangePassword = async () => {
   }
 };
 
+const copyStatus = ref<SnackbarProp>({
+  status: SNACKBAR_INFO_STATUS,
+  message: "",
+  color: "#FFFFFF",
+  display: false,
+});
+const copyToClipboard = (data: SnackbarProp) => {
+  copyStatus.value = data;
+};
+
 watch(
   () => queryParamEntity.value.page,
   async (newPage) => {
@@ -82,7 +97,6 @@ onMounted(async () => {
 </script>
 <template>
   <v-container class="w-100 d-flex ga-2 flex-column">
-    <!-- <Toast :display="!!errors.message" :message="errors.message" /> -->
     <div class="w-100 d-flex justify-space-between">
       <h2>
         {{ pageName }}
@@ -102,6 +116,14 @@ onMounted(async () => {
         :items="schools"
         :items-per-page="queryParamEntity.limit"
       >
+        <template v-slot:loading>
+          <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
+        </template>
+
+        <template v-slot:item.id="{ item }">
+          <CopyBlock :text="item.id" @on-display="copyToClipboard" />
+        </template>
+
         <template v-slot:item.actions="{ item }">
           <div class="d-flex ga-2">
             <div @click="showDialogChangePassword(item.id)">
@@ -113,11 +135,23 @@ onMounted(async () => {
           </div>
         </template>
         <template v-slot:bottom>
-          <div class="text-center pt-2">
-            <v-pagination
-              v-model="queryParamEntity.page"
-              :length="Math.ceil(metaData.total / metaData.pageSize)"
-            ></v-pagination>
+          <div class="text-center d-flex flex-row pt-2 justify-end pa-2">
+            <v-col class="ga-2">
+              <v-select
+                label="Hiển thị"
+                class="w-25"
+                :items="PAGE_SIZE_OPTIONS"
+                v-model="queryParamEntity.limit"
+              ></v-select>
+            </v-col>
+            <v-col>
+              <v-pagination
+                v-model="queryParamEntity.page"
+                class="w-100"
+                :length="Math.ceil(metaData.total / queryParamEntity.limit)"
+              >
+              </v-pagination>
+            </v-col>
           </div>
         </template>
       </v-data-table>
@@ -155,5 +189,23 @@ onMounted(async () => {
         <v-divider></v-divider>
       </template>
     </v-dialog>
+
+    <v-snackbar
+      id="copySuccess"
+      v-model="copyStatus.display"
+      :color="copyStatus.color"
+      :location="'top right'"
+    >
+      {{ copyStatus.message }}
+      <template v-slot:actions>
+        <v-btn
+          color="primary"
+          variant="text"
+          @click="copyStatus.display = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>

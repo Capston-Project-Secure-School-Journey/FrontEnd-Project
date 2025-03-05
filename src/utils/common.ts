@@ -54,3 +54,49 @@ export const createRequireMessageByField = (field: string) => {
     message: `${field} là trường bắt buộc`,
   };
 };
+
+export function useCountdown(initialTime = 30 * 60) {
+  const timeLeft = ref(initialTime);
+  let timer: ReturnType<typeof setInterval> | null = null;
+
+  // Format thời gian thành mm:ss
+  const formattedTime = computed(() => {
+    const minutes = Math.floor(timeLeft.value / 60);
+    const seconds = timeLeft.value % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+      2,
+      "0"
+    )}`;
+  });
+
+  // Bắt đầu countdown
+  const start = () => {
+    if (timer) return; // Nếu đang chạy thì không khởi động lại
+    timer = setInterval(() => {
+      if (timeLeft.value > 0) {
+        timeLeft.value--;
+      } else {
+        stop();
+      }
+    }, 1000);
+  };
+
+  // Dừng countdown
+  const stop = () => {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  };
+
+  // Reset countdown về giá trị ban đầu
+  const reset = () => {
+    stop();
+    timeLeft.value = initialTime;
+  };
+
+  // Dọn dẹp khi component bị hủy
+  onUnmounted(() => stop());
+
+  return { timeLeft, formattedTime, start, stop, reset };
+}

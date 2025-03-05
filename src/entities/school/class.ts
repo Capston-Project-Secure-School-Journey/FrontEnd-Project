@@ -12,6 +12,7 @@ export interface ClassCommonEntity {
 export interface ClassEntity {
   id?: string;
   grade?: number;
+  gradeName?: string;
   managedTeachers?: ManagerTeacher[];
   className?: string;
   numberOfStudent?: number;
@@ -19,4 +20,6 @@ export interface ClassEntity {
 
 export interface ManagerTeacher {
   managedTeacherId?: string;
+  id?: string;
+  name?: string;
 }

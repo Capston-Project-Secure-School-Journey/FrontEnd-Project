@@ -32,6 +32,7 @@ export const SCHOOL_ROUTE = {
   SIGN_UP: "/sign-up",
   DASHBOARD: "/dashboard",
   STUDENTS: "/students",
+  CREATE_STUDENTS: "/students/create",
   CLASSES: "/classes",
   CREATE_CLASS: "/classes/create",
   DRIVERS: "/drivers",

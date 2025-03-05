@@ -54,7 +54,7 @@ const onSubmit = handleSubmit(async () => {
     dateOfBirth: dateOfBirth.value,
     phoneNumber: phoneNumber.value,
     email: email.value,
-    gender: gender.value ?? GENDER_OPTIONS[0].id,
+    gender: gender.value ?? Number(GENDER_OPTIONS[0].id),
   };
 
   if (props.mode === MODE_FORM_CREATE) {
@@ -71,7 +71,7 @@ const onSubmit = handleSubmit(async () => {
 });
 
 const setupForCreate = () => {
-  setFieldValue("gender", genderSelected.value.id);
+  setFieldValue("gender", Number(genderSelected.value.id));
   setFieldValue(
     "dateOfBirth",
     dateOfBirthSelected.value.toISOString().split("T")[0]

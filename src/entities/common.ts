@@ -25,3 +25,10 @@ export interface MetaDataEntity {
   pageSize?: number;
   total?: number;
 }
+
+export interface SnackbarProp {
+  display: boolean;
+  status: number;
+  message: string;
+  color: string;
+}
