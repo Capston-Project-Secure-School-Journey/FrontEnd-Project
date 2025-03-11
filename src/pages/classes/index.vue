@@ -42,11 +42,11 @@ const headers = [
 ];
 
 watch(
-  () => queryParamEntity.value.page,
-  async (newPage) => {
-    queryParamEntity.value.page = newPage;
-    await classSchoolStore.getListClass(queryParamEntity.value);
-  }
+  () => queryParamEntity.value,
+  async (newQueryParamEntity) => {
+    await classSchoolStore.getListClass(newQueryParamEntity);
+  },
+  { deep: true }
 );
 
 const copyToClipboard = (data: string) => {
@@ -90,7 +90,7 @@ onMounted(async () => {
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <a target="blank" :href="`${SCHOOL_ROUTE.CLASSES}/${item.id}`">
+          <a :href="`${SCHOOL_ROUTE.CLASSES}/${item.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
           </a>
         </template>

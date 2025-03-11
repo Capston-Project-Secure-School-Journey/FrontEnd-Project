@@ -19,6 +19,7 @@ const isLoading = computed(() => studentSchoolStore.isLoading);
 const isSucceed = computed(() => studentSchoolStore.isSucceed);
 const student = computed(() => studentSchoolStore.student);
 const updateStatus = ref<boolean>(false);
+const display = ref<boolean>(false);
 
 const submit = async (data: StudentEntity) => {
   updateStatus.value = false;
@@ -27,6 +28,16 @@ const submit = async (data: StudentEntity) => {
 
   if (!isLoading.value && isSucceed.value) {
     updateStatus.value = true;
+  }
+};
+
+const deleteStudent = async () => {
+  if (studentId) {
+    await studentSchoolStore.deleteStudent(studentId);
+
+    if (!isLoading.value && isSucceed.value) {
+      navigateTo(SCHOOL_ROUTE.STUDENTS);
+    }
   }
 };
 
@@ -59,6 +70,20 @@ onMounted(async () => {
       :mode="MODE_FORM_UPDATE"
       :student="student"
       @submit="submit"
+      @delete="() => (display = true)"
     />
+
+    <v-dialog v-model="display" max-width="500">
+      <v-card
+        title="Xác nhận thao tác"
+        subtitle="Bạn có muốn xoá học sinh này chứ?"
+      >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text="Xoá" @click="deleteStudent"></v-btn>
+          <v-btn text="Huỷ" @click="display = false"></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>

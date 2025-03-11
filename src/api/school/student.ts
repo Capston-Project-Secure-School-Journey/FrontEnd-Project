@@ -18,3 +18,11 @@ export const updateStudentApi = (
 ): Promise<any> => {
   return apiSchool.put(`/students/${id}`, data);
 };
+
+export const deleteStudentApi = (id: string): Promise<any> => {
+  return apiSchool.delete(`/students/${id}`);
+};
+
+export const deleteListStudentApi = (ids: string[]): Promise<any> => {
+  return apiSchool.delete("/students", ids);
+};

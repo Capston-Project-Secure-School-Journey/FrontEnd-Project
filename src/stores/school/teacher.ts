@@ -1,5 +1,7 @@
 import {
   createTeacherApi,
+  deleteListTeacherApi,
+  deleteTeacherApi,
   getDetailTeacherApi,
   getTeacherListApi,
   updateTeacherApi,
@@ -86,7 +88,7 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
     },
 
     /**
-     * Detail school
+     * Detail teacher
      * @param id teacher id
      */
     async getDetailTeacher(id: string) {
@@ -110,8 +112,8 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
     },
 
     /**
-     * Update school
-     * @param id school id
+     * Update teacher
+     * @param id teacher id
      */
     async updateTeacher(id: string, entity: TeacherEntity) {
       this.$state.isLoading = true;
@@ -130,6 +132,49 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
         });
 
       this.$state.isLoading = false;
+    },
+
+    /**
+     * Delete teacher
+     * @param id teacher id
+     */
+    async deleteTeacher(id: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteTeacherApi(id)
+        .then((result) => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+          this.$state.isSucceed = false;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    /**
+     * Delete list teacher
+     *
+     * @param ids list id teacher
+     */
+    async deleteListTeacher(ids: string[]) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteListTeacherApi(ids)
+        .then((result) => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+          this.$state.isSucceed = false;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
     },
   },
 });

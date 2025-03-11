@@ -21,11 +21,13 @@ definePageMeta({
 });
 
 const studentSchoolStore = StudentSchoolStore();
-const teachers = computed(() => studentSchoolStore.students);
+const students = computed(() => studentSchoolStore.students);
 const errors = computed(() => studentSchoolStore.errors);
 const isLoading = computed(() => studentSchoolStore.isLoading);
+const isSucceed = computed(() => studentSchoolStore.isSucceed);
 const metaData = computed(() => studentSchoolStore.metaData);
-
+const selectedStudent = ref<StudentCommonEntity[]>([]);
+const showDialogDelete = ref<boolean>(false);
 const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
@@ -72,6 +74,18 @@ watch(
   { deep: true }
 );
 
+const deleteListStudent = async () => {
+  if (selectedStudent.value.length > 0) {
+    await studentSchoolStore.deleteListStudent(selectedStudent.value);
+
+    if (!isLoading.value && isSucceed.value) {
+      showDialogDelete.value = false;
+      await studentSchoolStore.getListStudent(queryParamEntity.value);
+      selectedStudent.value = [];
+    }
+  }
+};
+
 const copyStatus = ref<SnackbarProp>({
   status: SNACKBAR_INFO_STATUS,
   message: "",
@@ -103,10 +117,23 @@ onMounted(async () => {
       <v-data-table
         class="w-100"
         :headers="headers"
+        show-select
+        v-model="selectedStudent"
         :loading="isLoading as boolean"
-        :items="teachers"
+        :items="students"
         :items-per-page="queryParamEntity.limit"
       >
+        <template v-slot:top>
+          <div class="pa-2 d-flex justify-start">
+            <v-btn
+              text="Xoá"
+              :disabled="selectedStudent.length === 0"
+              color="error"
+              :onclick="() => (showDialogDelete = true)"
+            ></v-btn>
+          </div>
+        </template>
+
         <template v-slot:loading>
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
         </template>
@@ -116,7 +143,7 @@ onMounted(async () => {
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <a target="blank" :href="`${SCHOOL_ROUTE.STUDENTS}/${item.id}`">
+          <a :href="`${SCHOOL_ROUTE.STUDENTS}/${item.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
           </a>
         </template>
@@ -142,6 +169,20 @@ onMounted(async () => {
         </template>
       </v-data-table>
     </v-card>
+
+    <v-dialog v-model="showDialogDelete" max-width="500">
+      <v-card
+        title="Xác nhận thao tác"
+        subtitle="Bạn có muốn xoá Học sinh này chứ này chứ?"
+      >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text="Xoá" :onclick="deleteListStudent"></v-btn>
+          <v-btn text="Huỷ" :onclick="() => (showDialogDelete = false)"></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-snackbar
       id="copySuccess"
       v-model="copyStatus.display"

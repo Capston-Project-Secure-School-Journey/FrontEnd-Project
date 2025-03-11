@@ -12,6 +12,7 @@ import Toast from "~/components/common/Toast.vue";
 import { AdminSchoolStore } from "~/stores/admin/school";
 import { ADMIN_ROUTE } from "~/constants/route";
 import SearchAddressInput from "~/components/common/SearchAddressInput.vue";
+import type { routes } from "vue-router/auto-routes";
 
 interface SchoolFormProps {
   mode: string;
@@ -21,12 +22,14 @@ const props = withDefaults(defineProps<SchoolFormProps>(), {
   mode: MODE_FORM_CREATE,
 });
 
-const emits = defineEmits(["submit"]);
+const emits = defineEmits(["submit", "delete"]);
 
 const { defineField, setFieldValue, handleSubmit, errors } = useForm({
   validationSchema:
     props.mode === MODE_FORM_CREATE ? createSchoolSchema : updateSchoolSchema,
 });
+
+const router = useRouter();
 const adminSchoolStore = AdminSchoolStore();
 const isLoading = computed(() => adminSchoolStore.isLoading);
 const isSucceed = computed(() => adminSchoolStore.isSucceed);
@@ -109,6 +112,10 @@ const schoolTypeOptionChange = (data: OptionSelect) => {
   schoolType.value = data.id;
 };
 
+const onDelete = () => {
+  emits("delete");
+};
+
 const getAddress = (data: string) => {
   address.value = data;
 };
@@ -132,7 +139,7 @@ onMounted(async () => {
       </template>
     </v-snackbar>
     <div class="d-flex ga-2 align-center">
-      <div class="h-100" @click="navigateTo(ADMIN_ROUTE.SCHOOLS)">
+      <div class="h-100" @click="router.go(-1)">
         <v-icon>mdi-arrow-left</v-icon>
       </div>
       <h2>
@@ -263,6 +270,13 @@ onMounted(async () => {
       </v-row>
 
       <div class="d-flex justify-end">
+        <v-btn
+          v-if="props.mode === MODE_FORM_UPDATE"
+          text="Xoá"
+          color="error"
+          @click="onDelete"
+        ></v-btn>
+
         <v-btn
           class="mx-2"
           color="primary"

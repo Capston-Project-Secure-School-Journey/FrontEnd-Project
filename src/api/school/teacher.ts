@@ -18,3 +18,11 @@ export const updateTeacherApi = (
 export const getDetailTeacherApi = (id: string): Promise<any> => {
   return apiSchool.get(`/teachers/${id}`);
 };
+
+export const deleteTeacherApi = (id: string): Promise<any> => {
+  return apiSchool.delete(`/teachers/${id}`);
+};
+
+export const deleteListTeacherApi = (ids: string[]): Promise<any> => {
+  return apiSchool.delete("/teachers", ids);
+};

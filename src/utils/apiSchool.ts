@@ -44,7 +44,8 @@ class ApiSchool {
           navigateTo("/404");
         } else if (response.status === StatusCode.UNAUTHENTICATED) {
           console.log(`Log status code ${StatusCode.UNAUTHENTICATED}`);
-          navigateTo(SCHOOL_ROUTE.LOGIN);
+          setToken(SCHOOL_TOKEN, "");
+          navigateTo(SCHOOL_ROUTE.LOGIN, { external: true });
           return {
             statusCode: response._data.statuscode,
             message: response._data.message,

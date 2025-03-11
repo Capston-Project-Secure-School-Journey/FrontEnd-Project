@@ -3,6 +3,7 @@ import { useForm } from "vee-validate";
 import {
   GENDER_NAME,
   MODE_FORM_CREATE,
+  MODE_FORM_UPDATE,
   PAGE_LIMIT_DEFAULT,
   SORT_DIRECTION,
 } from "~/constants/common";
@@ -31,7 +32,7 @@ const props = withDefaults(defineProps<ClassFormProps>(), {
   mode: MODE_FORM_CREATE,
 });
 
-const emits = defineEmits(["submit"]);
+const emits = defineEmits(["submit", "delete"]);
 
 const { defineField, setFieldValue, handleSubmit, errors } = useForm({
   validationSchema:
@@ -172,6 +173,11 @@ const onSubmit = handleSubmit(async () => {
     emits("submit", entity);
   }
 });
+
+const onDelete = () => {
+  emits("delete");
+};
+
 onMounted(() => {
   if (props.mode === MODE_FORM_CREATE) {
     setupForCreate();
@@ -295,6 +301,12 @@ onMounted(() => {
       </v-row>
 
       <div class="d-flex justify-end">
+        <v-btn
+          v-if="props.mode === MODE_FORM_UPDATE"
+          text="Xoá"
+          color="error"
+          @click="onDelete"
+        ></v-btn>
         <v-btn
           class="mx-2"
           color="primary"

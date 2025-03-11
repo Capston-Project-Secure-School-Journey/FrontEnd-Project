@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import {
   createSchoolApi,
+  deleteListSchoolApi,
+  deleteSchoolApi,
   getDetailSchoolApi,
   getListSchoolApi,
   updateSchoolAdminPasswordApi,
@@ -151,6 +153,49 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
         });
 
       this.$state.isLoading = false;
+    },
+
+    /**
+     * Delete student
+     * @param id student id
+     */
+    async deleteSchool(id: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteSchoolApi(id)
+        .then((result) => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+          this.$state.isSucceed = false;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    /**
+     * Delete list school
+     *
+     * @param ids list id school
+     */
+    async deleteListSchool(ids: string[]) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteListSchoolApi(ids)
+        .then((result) => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+          this.$state.isSucceed = false;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
     },
   },
 });

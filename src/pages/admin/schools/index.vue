@@ -25,7 +25,9 @@ const adminSchoolStore = AdminSchoolStore();
 const schools = computed(() => adminSchoolStore.schools ?? []);
 const errors = computed(() => adminSchoolStore.errors);
 const isLoading = computed(() => adminSchoolStore.isLoading);
+const isSucceed = computed(() => adminSchoolStore.isSucceed);
 const metaData = computed(() => adminSchoolStore.metaData);
+const selectedSchool = ref<AdminSchoolCommonEntity[]>([]);
 
 const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
@@ -48,10 +50,6 @@ const headers = [
   { title: "Chi tiết", key: "actions" },
 ];
 
-const goToDetail = (id: string) => {
-  navigateTo(`${ADMIN_ROUTE.SCHOOLS}/${id}`);
-};
-
 const showDialog = ref<boolean>(false);
 const currentSchool = ref<string>("");
 const adminPassword = ref<string>("");
@@ -60,6 +58,7 @@ const showDialogChangePassword = (id: string) => {
   currentSchool.value = id;
   showDialog.value = true;
 };
+const showDialogDelete = ref<boolean>(false);
 
 const handleChangePassword = async () => {
   if (
@@ -80,16 +79,29 @@ const copyStatus = ref<SnackbarProp>({
   color: "#FFFFFF",
   display: false,
 });
+
 const copyToClipboard = (data: SnackbarProp) => {
   copyStatus.value = data;
 };
 
-watch(
-  () => queryParamEntity.value.page,
-  async (newPage) => {
-    queryParamEntity.value.page = newPage;
-    await adminSchoolStore.getListSchool(queryParamEntity.value);
+const deleteListSchool = async () => {
+  if (selectedSchool.value.length > 0) {
+    await adminSchoolStore.deleteListSchool(selectedSchool.value);
+
+    if (!isLoading.value && isSucceed.value) {
+      showDialogDelete.value = false;
+      await adminSchoolStore.getListSchool(queryParamEntity.value);
+      selectedSchool.value = [];
+    }
   }
+};
+
+watch(
+  () => queryParamEntity.value,
+  async (newQueryParamEntity) => {
+    await adminSchoolStore.getListSchool(newQueryParamEntity);
+  },
+  { deep: true }
 );
 onMounted(async () => {
   await adminSchoolStore.getListSchool(queryParamEntity.value);
@@ -111,11 +123,25 @@ onMounted(async () => {
     <v-card class="w-100">
       <v-data-table
         class="w-100"
+        show-select
+        item-value="id"
+        v-model="selectedSchool"
         :loading="isLoading as boolean"
         :headers="headers"
         :items="schools"
         :items-per-page="queryParamEntity.limit"
       >
+        <template v-slot:top>
+          <div class="pa-2 d-flex justify-start">
+            <v-btn
+              text="Xoá"
+              :disabled="selectedSchool.length === 0"
+              color="error"
+              :onclick="() => (showDialogDelete = true)"
+            ></v-btn>
+          </div>
+        </template>
+
         <template v-slot:loading>
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
         </template>
@@ -129,13 +155,13 @@ onMounted(async () => {
             <div @click="showDialogChangePassword(item.id)">
               <v-icon v-tooltip="'Đổi mật khẩu'">mdi-lock</v-icon>
             </div>
-            <div @click="goToDetail(item.id)">
+            <a :href="`${ADMIN_ROUTE.SCHOOLS}/${item.id}`">
               <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
-            </div>
+            </a>
           </div>
         </template>
         <template v-slot:bottom>
-          <div class="text-center d-flex flex-row pt-2 justify-end pa-2">
+          <v-row class="text-center d-flex flex-row pt-2 justify-end pa-2">
             <v-col class="ga-2">
               <v-select
                 label="Hiển thị"
@@ -152,7 +178,7 @@ onMounted(async () => {
               >
               </v-pagination>
             </v-col>
-          </div>
+          </v-row>
         </template>
       </v-data-table>
     </v-card>
@@ -188,6 +214,19 @@ onMounted(async () => {
         </v-card>
         <v-divider></v-divider>
       </template>
+    </v-dialog>
+
+    <v-dialog v-model="showDialogDelete" max-width="500">
+      <v-card
+        title="Xác nhận thao tác"
+        subtitle="Bạn có muốn xoá Trường học này chứ này chứ?"
+      >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text="Xoá" :onclick="deleteListSchool"></v-btn>
+          <v-btn text="Huỷ" :onclick="() => (showDialogDelete = false)"></v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
 
     <v-snackbar

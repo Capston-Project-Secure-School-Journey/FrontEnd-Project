@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
-import { GENDER_OPTIONS, MODE_FORM_CREATE } from "~/constants/common";
+import {
+  GENDER_OPTIONS,
+  MODE_FORM_CREATE,
+  MODE_FORM_UPDATE,
+} from "~/constants/common";
 import { SCHOOL_ROUTE } from "~/constants/route";
 import type { OptionSelect } from "~/entities/common";
 import type { TeacherEntity } from "~/entities/school/teacher";
@@ -18,7 +22,7 @@ const props = withDefaults(defineProps<TeacherFormProps>(), {
   mode: MODE_FORM_CREATE,
 });
 
-const emits = defineEmits(["submit"]);
+const emits = defineEmits(["submit", "delete"]);
 
 const { defineField, setFieldValue, handleSubmit, errors } = useForm({
   validationSchema:
@@ -94,6 +98,10 @@ const setupForUpdate = () => {
 
 const genderOptionChange = (data: OptionSelect) => {
   gender.value = data.id;
+};
+
+const onDelete = () => {
+  emits("delete");
 };
 
 onMounted(async () => {
@@ -183,6 +191,12 @@ onMounted(async () => {
       </v-row>
 
       <div class="d-flex justify-end">
+        <v-btn
+          v-if="props.mode === MODE_FORM_UPDATE"
+          text="Xoá"
+          color="error"
+          @click="onDelete"
+        ></v-btn>
         <v-btn
           class="mx-2"
           color="primary"

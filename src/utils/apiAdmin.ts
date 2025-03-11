@@ -1,4 +1,5 @@
 import { ADMIN_TOKEN } from "~/constants/authentication";
+import { ADMIN_ROUTE } from "~/constants/route";
 import * as StatusCode from "~/constants/status-code";
 
 const config = useRuntimeConfig();
@@ -45,6 +46,7 @@ class ApiAdmin {
         } else if (response.status === StatusCode.UNAUTHENTICATED) {
           console.log(`Log status code ${StatusCode.UNAUTHENTICATED}`);
           setToken(ADMIN_TOKEN, "");
+          navigateTo(ADMIN_ROUTE.LOGIN, { external: true });
 
           return {
             statusCode: response._data.statuscode,

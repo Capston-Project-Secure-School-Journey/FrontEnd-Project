@@ -1,6 +1,8 @@
 import { getListClassApi } from "~/api/school/class";
 import {
   createStudentApi,
+  deleteListStudentApi,
+  deleteStudentApi,
   getDetailStudentApi,
   getListStudentApi,
   updateStudentApi,
@@ -145,6 +147,49 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
       await updateStudentApi(id, entity)
         .then((result) => {
           this.$state.student = result;
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+          this.$state.isSucceed = false;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    /**
+     * Delete student
+     * @param id student id
+     */
+    async deleteStudent(id: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteStudentApi(id)
+        .then((result) => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+          this.$state.isSucceed = false;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    /**
+     * Delete list student
+     *
+     * @param ids list id student
+     */
+    async deleteListStudent(ids: string[]) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteListStudentApi(ids)
+        .then((result) => {
           this.$state.isSucceed = true;
         })
         .catch((err) => {

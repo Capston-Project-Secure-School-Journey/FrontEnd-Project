@@ -28,3 +28,11 @@ export const updateSchoolAdminPasswordApi = (
     data
   );
 };
+
+export const deleteSchoolApi = (id: string): Promise<any> => {
+  return apiAdmin.delete(`/schools/${id}`);
+};
+
+export const deleteListSchoolApi = (ids: string[]): Promise<any> => {
+  return apiAdmin.delete("/schools", ids);
+};

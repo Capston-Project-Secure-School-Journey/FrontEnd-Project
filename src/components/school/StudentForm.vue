@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<ClassFormProps>(), {
   mode: MODE_FORM_CREATE,
 });
 
-const emits = defineEmits(["submit"]);
+const emits = defineEmits(["submit", "delete"]);
 
 // Validate
 const { defineField, setFieldValue, handleSubmit, errors } = useForm({
@@ -100,6 +100,10 @@ const onSubmit = handleSubmit(async () => {
 
   emits("submit", entity);
 });
+
+const onDelete = () => {
+  emits("delete");
+};
 
 const setupForCreate = () => {
   updateDateOfBirth();
@@ -250,8 +254,14 @@ onMounted(() => {
         </v-col>
       </v-row>
 
-      <v-row no-gutters class="d-flex justify-end">
+      <v-row no-gutters class="d-flex justify-end ga-2">
         <v-spacer></v-spacer>
+        <v-btn
+          v-if="props.mode === MODE_FORM_UPDATE"
+          text="Xoá"
+          color="error"
+          @click="onDelete"
+        ></v-btn>
         <v-btn
           v-if="props.mode === MODE_FORM_CREATE"
           text="Lưu"

@@ -8,7 +8,7 @@ import {
 } from "~/constants/common";
 import { SCHOOL_ROUTE } from "~/constants/route";
 import CopyBlock from "~/components/common/CopyBlock.vue";
-import { SnackbarProp, type QueryParamEntity } from "~/entities/common";
+import { type SnackbarProp, type QueryParamEntity } from "~/entities/common";
 import type { TeacherCommonEntity } from "~/entities/school/teacher";
 import { TeacherSchoolStore } from "~/stores/school/teacher";
 
@@ -24,8 +24,10 @@ const teacherSchoolStore = TeacherSchoolStore();
 const teachers = computed(() => teacherSchoolStore.teachers);
 const errors = computed(() => teacherSchoolStore.errors);
 const isLoading = computed(() => teacherSchoolStore.isLoading);
+const isSucceed = computed(() => teacherSchoolStore.isSucceed);
 const metaData = computed(() => teacherSchoolStore.metaData);
-
+const selectedTeacher = ref<TeacherCommonEntity[]>([]);
+const showDialogDelete = ref<boolean>(false);
 const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
@@ -63,10 +65,6 @@ const headers = [
   { title: "Chi tiết", key: "actions" },
 ];
 
-const goToDetail = (id: string) => {
-  navigateTo(`${SCHOOL_ROUTE.TEACHERS}/${id}`);
-};
-
 const copyStatus = ref<SnackbarProp>({
   status: SNACKBAR_INFO_STATUS,
   message: "",
@@ -76,6 +74,18 @@ const copyStatus = ref<SnackbarProp>({
 
 const copyToClipboard = (data: SnackbarProp) => {
   copyStatus.value = data;
+};
+
+const deleteListTeacher = async () => {
+  if (selectedTeacher.value.length > 0) {
+    await teacherSchoolStore.deleteListTeacher(selectedTeacher.value);
+
+    if (!isLoading.value && isSucceed.value) {
+      showDialogDelete.value = false;
+      await teacherSchoolStore.getTeacherList(queryParamEntity.value);
+      selectedTeacher.value = [];
+    }
+  }
 };
 
 watch(
@@ -105,12 +115,25 @@ onMounted(async () => {
     </div>
     <v-card class="w-100">
       <v-data-table
+        show-select
+        v-model="selectedTeacher"
         class="w-100"
         :headers="headers"
         :loading="isLoading as boolean"
         :items="teachers"
         :items-per-page="queryParamEntity.limit"
       >
+        <template v-slot:top>
+          <div class="pa-2 d-flex justify-start">
+            <v-btn
+              text="Xoá"
+              :disabled="selectedTeacher.length === 0"
+              color="error"
+              :onclick="() => (showDialogDelete = true)"
+            ></v-btn>
+          </div>
+        </template>
+
         <template v-slot:loading>
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
         </template>
@@ -120,9 +143,9 @@ onMounted(async () => {
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <div @click="goToDetail(item.id)">
+          <a :href="`${SCHOOL_ROUTE.TEACHERS}/${item.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
-          </div>
+          </a>
         </template>
         <template v-slot:bottom>
           <div class="text-center d-flex flex-row pt-2 justify-end pa-2">
@@ -146,6 +169,20 @@ onMounted(async () => {
         </template>
       </v-data-table>
     </v-card>
+
+    <v-dialog v-model="showDialogDelete" max-width="500">
+      <v-card
+        title="Xác nhận thao tác"
+        subtitle="Bạn có muốn xoá Giáo viên này chứ này chứ?"
+      >
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text="Xoá" :onclick="deleteListTeacher"></v-btn>
+          <v-btn text="Huỷ" :onclick="() => (showDialogDelete = false)"></v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-snackbar
       id="copySuccess"
       v-model="copyStatus.display"
