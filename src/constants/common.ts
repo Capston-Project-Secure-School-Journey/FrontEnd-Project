@@ -48,3 +48,9 @@ export const SNACKBAR_COLOR = {
   [SNACKBAR_WARNING_STATUS]: "#f0ad4e",
   [SNACKBAR_INFO_STATUS]: "#5bc0de",
 };
+
+/**
+ * For image
+ */
+export const ALLOW_TYPE_IMAGE = ["image/jpg", "image/jpeg", "image/png"];
+export const ALLOW_SIZE_IMAGE = 5; // type: Mb

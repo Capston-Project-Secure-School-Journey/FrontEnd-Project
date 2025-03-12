@@ -15,10 +15,6 @@ const me = computed(() => schoolAuthStore.me);
 const logout = () => {
   schoolAuthStore.logout(USER_TYPE_ENUM.SCHOOL_ADMIN);
 };
-
-onMounted(() => {
-  console.log(me.value);
-});
 </script>
 <template>
   <v-layout class="rounded rounded-md">

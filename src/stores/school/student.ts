@@ -6,6 +6,7 @@ import {
   getDetailStudentApi,
   getListStudentApi,
   updateStudentApi,
+  uploadAvatarStudentApi,
 } from "~/api/school/student";
 import type { ErrorEntity } from "~/entities/api-error";
 import type { MetaDataEntity } from "~/entities/common";
@@ -143,6 +144,13 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
     async updateStudent(id: string, entity: StudentEntity) {
       this.$state.isLoading = true;
       this.$state.isSucceed = false;
+
+      if (entity.avatar) {
+        const formData = new FormData();
+        formData.append("file", entity.avatar);
+
+        await uploadAvatarStudentApi(id, formData);
+      }
 
       await updateStudentApi(id, entity)
         .then((result) => {

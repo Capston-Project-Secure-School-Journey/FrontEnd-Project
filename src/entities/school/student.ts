@@ -21,5 +21,7 @@ export interface StudentEntity {
   dateOfBirth?: string;
   classId?: string;
   gender?: number;
+  avatarUrl?: string;
   qrImageUrl?: string;
+  avatar?: File;
 }

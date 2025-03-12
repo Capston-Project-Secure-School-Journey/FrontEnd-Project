@@ -49,6 +49,11 @@ const headers = [
     value: "key",
   },
   {
+    title: "Ảnh đại diện",
+    key: "avatar",
+    value: "avatar",
+  },
+  {
     title: "Họ",
     key: "firstName",
     value: "firstName",
@@ -96,6 +101,8 @@ const editStudentInList = (data: CreateStudentEntity) => {
       _.lastName = data.lastName;
       _.dateOfBirth = data.dateOfBirth;
       _.gender = data.gender;
+      _.avatar = data.avatar;
+      _.avatarUrl = data.avatarUrl;
     }
   });
 
@@ -250,6 +257,22 @@ const onSubmit = () => {
         :loading="isLoadingAddStudent"
         hide-default-footer
       >
+        <template v-slot:item.avatar="{ item }">
+          <v-avatar size="32" rounded="100" class="border">
+            <v-img v-if="item.avatar" :src="item.avatarUrl">
+              <template v-slot:placeholder>
+                <div class="d-flex align-center justify-center fill-height">
+                  <v-progress-circular
+                    color="grey-lighten-4"
+                    indeterminate
+                  ></v-progress-circular>
+                </div>
+              </template>
+            </v-img>
+            <v-icon v-else icon="mdi-image" size="128"></v-icon>
+          </v-avatar>
+        </template>
+
         <template v-slot:item.actions="{ item }">
           <div class="d-flex ga-2">
             <div @click="handleEditStudent(item)">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
-import { date } from "zod";
 import {
+  ALLOW_SIZE_IMAGE,
   GENDER_OPTIONS,
   MODE_FORM_CREATE,
   MODE_FORM_UPDATE,
@@ -47,9 +47,10 @@ const [firstName] = defineField("firstName");
 const [lastName] = defineField("lastName");
 const [dateOfBirth] = defineField("dateOfBirth");
 const [gender] = defineField("gender");
+const avatarUrl = ref<string>("");
 const genderSelected = ref<OptionSelect>(GENDER_OPTIONS[0]);
 const dateOfBirthSelected = ref<Date>(new Date());
-
+const fileUpload = ref<File | null>(null);
 // Handle function
 const updateDateOfBirth = () => {
   dateOfBirth.value = convertDateTimeServer(
@@ -84,8 +85,15 @@ const onSubmit = handleSubmit(async () => {
     gender: Number(genderSelected.value.id),
   };
 
+  // Check create and get temp Id
   if (props.tempId && props.mode === MODE_FORM_CREATE) {
     entity = Object.assign({ key: props.tempId }, entity);
+  }
+
+  // Check create and update image to get url
+  if (fileUpload.value && imageValidation(fileUpload.value)) {
+    entity.avatar = fileUpload.value;
+    entity.avatarUrl = URL.createObjectURL(fileUpload.value);
   }
 
   if (props.mode === MODE_FORM_UPDATE) {
@@ -114,6 +122,7 @@ const setupForCreate = () => {
     genderSelected.value =
       GENDER_OPTIONS.filter((_) => _.id === props.student?.gender)?.[0] ??
       GENDER_OPTIONS[0];
+    avatarUrl.value = props.student?.avatarUrl;
     setFieldValue("dateOfBirth", props.student.dateOfBirth);
     dateOfBirthSelected.value = new Date(props.student.dateOfBirth);
   }
@@ -130,6 +139,7 @@ const setupForUpdate = () => {
       GENDER_OPTIONS.filter((_) => _.id === props.student?.gender)?.[0] ??
       GENDER_OPTIONS[0];
     setFieldValue("dateOfBirth", props.student.dateOfBirth);
+    avatarUrl.value = props.student?.avatarUrl;
     classId.value = props.student.classId;
     dateOfBirthSelected.value = new Date(props.student.dateOfBirth);
     handleSearchClass();
@@ -142,6 +152,16 @@ const reloadPage = () => {
   location.reload();
 };
 
+const getUrl = (file: File) => {
+  const isValidImage = imageValidation(file);
+  if (!isValidImage) {
+    avatarUrl.value = "";
+    fileUpload.value = null;
+  } else {
+    avatarUrl.value = URL.createObjectURL(file);
+  }
+};
+
 onMounted(() => {
   if (props.mode === MODE_FORM_CREATE) {
     setupForCreate();
@@ -152,6 +172,42 @@ onMounted(() => {
 </script>
 <template>
   <v-card class="w-100 d-flex flex-column pa-2 ga-4">
+    <v-row
+      v-if="props.mode === MODE_FORM_UPDATE"
+      no-gutters
+      class="ga-2 justify-center align-center flex-column"
+    >
+      <v-avatar size="256" rounded="0" class="border">
+        <v-img v-if="avatarUrl" :src="avatarUrl">
+          <template v-slot:placeholder>
+            <div class="d-flex align-center justify-center fill-height">
+              <v-progress-circular
+                color="grey-lighten-4"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </template>
+        </v-img>
+        <v-icon v-else icon="mdi-image" size="128"></v-icon>
+      </v-avatar>
+      <span class="text-subtitle-1">Tỉ lệ khuyến cáo 1/1, 3/4, 4/6</span>
+    </v-row>
+    <v-row v-if="props.mode === MODE_FORM_UPDATE" no-gutters class="ga-2 pa-2">
+      <v-file-input
+        label="Tải lên ảnh mới"
+        v-model="fileUpload"
+        class="w-100"
+        prepend-icon=""
+        clear-icon="$clear"
+        append-inner-icon="mdi-camera"
+        variant="filled"
+        v-on:update:model-value="getUrl"
+        persistent-hint
+        :hint="`Vui lòng chọn ảnh có dung lượng tối đa ${ALLOW_SIZE_IMAGE}Mb và có dạng ${getSuffixImage().join(
+          ' ,'
+        )}`"
+      ></v-file-input>
+    </v-row>
     <v-form
       @submit.prevent="onSubmit"
       class="d-flex flex-column w-100 ga-2 pa-2"
@@ -222,7 +278,16 @@ onMounted(() => {
               aspect-ratio="1/1"
               cover
               :src="props.student?.qrImageUrl"
-            ></v-img>
+            >
+              <template v-slot:placeholder>
+                <div class="d-flex align-center justify-center fill-height">
+                  <v-progress-circular
+                    color="grey-lighten-4"
+                    indeterminate
+                  ></v-progress-circular>
+                </div>
+              </template>
+            </v-img>
           </div>
         </v-col>
         <v-col>
@@ -270,6 +335,7 @@ onMounted(() => {
           @click="onSubmit"
         ></v-btn>
         <v-btn
+          v-else
           text="Lưu"
           type="submit"
           color="primary"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useForm } from "vee-validate";
 import {
+  ALLOW_SIZE_IMAGE,
   GENDER_OPTIONS,
   MODE_FORM_CREATE,
   MODE_FORM_UPDATE,
@@ -44,6 +45,8 @@ const [gender] = defineField("gender");
 const genderSelected = ref<OptionSelect>(GENDER_OPTIONS[0]);
 const [phoneNumber] = defineField("phoneNumber");
 const [email] = defineField("email");
+const avatarUrl = ref<string>("");
+const fileUpload = ref<File | null>(null);
 
 const updateDateOfBirth = () => {
   dateOfBirth.value = convertDateTimeServer(
@@ -70,6 +73,11 @@ const onSubmit = handleSubmit(async () => {
       display.value = true;
     }
   } else {
+    if (fileUpload.value && imageValidation(fileUpload.value)) {
+      entity.avatar = fileUpload.value;
+      entity.avatarUrl = URL.createObjectURL(fileUpload.value);
+    }
+
     emits("submit", entity);
   }
 });
@@ -89,6 +97,7 @@ const setupForUpdate = () => {
   dateOfBirthSelected.value = new Date(props.teacher?.dateOfBirth);
   setFieldValue("phoneNumber", props.teacher?.phoneNumber);
   setFieldValue("gender", props.teacher?.gender);
+  avatarUrl.value = props.teacher?.avatarUrl;
   genderSelected.value =
     GENDER_OPTIONS.filter((_) => _.id === props.teacher?.gender)?.[0] ??
     GENDER_OPTIONS[0];
@@ -98,6 +107,16 @@ const setupForUpdate = () => {
 
 const genderOptionChange = (data: OptionSelect) => {
   gender.value = data.id;
+};
+
+const getUrl = (file: File) => {
+  const isValidImage = imageValidation(file);
+  if (!isValidImage) {
+    avatarUrl.value = "";
+    fileUpload.value = null;
+  } else {
+    avatarUrl.value = URL.createObjectURL(file);
+  }
 };
 
 const onDelete = () => {
@@ -127,6 +146,44 @@ onMounted(async () => {
       </h2>
     </div>
     <h3>Thông tin Giáo viên</h3>
+
+    <v-row
+      v-if="props.mode === MODE_FORM_UPDATE"
+      no-gutters
+      class="ga-2 justify-center align-center flex-column"
+    >
+      <v-avatar size="256" rounded="0" class="border">
+        <v-img v-if="avatarUrl" :src="avatarUrl">
+          <template v-slot:placeholder>
+            <div class="d-flex align-center justify-center fill-height">
+              <v-progress-circular
+                color="grey-lighten-4"
+                indeterminate
+              ></v-progress-circular>
+            </div>
+          </template>
+        </v-img>
+        <v-icon v-else icon="mdi-image" size="128"></v-icon>
+      </v-avatar>
+      <span class="text-subtitle-1">Tỉ lệ khuyến cáo 1/1, 3/4, 4/6</span>
+    </v-row>
+    <v-row v-if="props.mode === MODE_FORM_UPDATE" no-gutters class="ga-2 pa-2">
+      <v-file-input
+        label="Tải lên ảnh mới"
+        v-model="fileUpload"
+        class="w-100"
+        prepend-icon=""
+        clear-icon="$clear"
+        append-inner-icon="mdi-camera"
+        variant="filled"
+        v-on:update:model-value="getUrl"
+        persistent-hint
+        :hint="`Vui lòng chọn ảnh có dung lượng tối đa ${ALLOW_SIZE_IMAGE}Mb và có dạng ${getSuffixImage().join(
+          ' ,'
+        )}`"
+      ></v-file-input>
+    </v-row>
+
     <v-form @submit.prevent="onSubmit" class="d-flex flex-column w-100 ga-2">
       <v-row no-gutters class="ga-2">
         <v-col>

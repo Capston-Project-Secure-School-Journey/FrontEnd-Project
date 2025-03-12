@@ -1,3 +1,5 @@
+import { ALLOW_SIZE_IMAGE, ALLOW_TYPE_IMAGE } from "~/constants/common";
+
 /**
  * Delay function
  * @param {countTime} number of milisecond
@@ -100,3 +102,41 @@ export function useCountdown(initialTime = 30 * 60) {
 
   return { timeLeft, formattedTime, start, stop, reset };
 }
+
+export const getSuffixImage = () => {
+  return ALLOW_TYPE_IMAGE.map((_) => `.${_.split("/")[1]}`);
+};
+
+/**
+ * Validate image
+ *
+ * @param file file image
+ * @returns true | false
+ */
+export const imageValidation = (file: File) => {
+  // validate size
+  const fileUploadedSize = Number(file.size) / 1024; // Convert Bytes to KB
+  const maxSizeUpload = Number(ALLOW_SIZE_IMAGE) * 1024; // Convert MB to KB
+
+  if (fileUploadedSize > maxSizeUpload) {
+    return false;
+  }
+
+  // validate type
+  // 1. Check file extension
+  if (!ALLOW_TYPE_IMAGE.includes(file.type)) {
+    return false;
+  }
+  // 2. Check MINE
+  const fileName = file.name.toLowerCase();
+  const imageSuffix = ALLOW_TYPE_IMAGE.map((_) => `.${_.split("/")[1]}`);
+  let isValidSuffix = false;
+  imageSuffix.forEach((suffix) => {
+    if (fileName.endsWith(suffix)) {
+      isValidSuffix = true;
+      return;
+    }
+  });
+
+  return isValidSuffix;
+};

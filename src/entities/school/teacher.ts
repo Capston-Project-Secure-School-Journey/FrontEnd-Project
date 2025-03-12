@@ -16,4 +16,6 @@ export interface TeacherEntity {
   gender?: number;
   phoneNumber?: string;
   email?: string;
+  avatar?: File;
+  avatarUrl?: string;
 }

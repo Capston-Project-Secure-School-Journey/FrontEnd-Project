@@ -19,6 +19,13 @@ export const updateStudentApi = (
   return apiSchool.put(`/students/${id}`, data);
 };
 
+export const uploadAvatarStudentApi = (
+  idStudent: string,
+  formData: FormData
+): Promise<any> => {
+  return apiSchool.post(`students/${idStudent}/upload-avatar`, formData);
+};
+
 export const deleteStudentApi = (id: string): Promise<any> => {
   return apiSchool.delete(`/students/${id}`);
 };

@@ -15,6 +15,13 @@ export const updateTeacherApi = (
   return apiSchool.put(`/teachers/${id}`, data);
 };
 
+export const uploadAvatarTeacherApi = (
+  idTeacher: string,
+  formData: FormData
+): Promise<any> => {
+  return apiSchool.post(`/teachers/${idTeacher}/upload-avatar`, formData);
+};
+
 export const getDetailTeacherApi = (id: string): Promise<any> => {
   return apiSchool.get(`/teachers/${id}`);
 };
