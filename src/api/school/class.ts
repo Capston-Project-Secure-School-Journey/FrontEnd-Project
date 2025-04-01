@@ -19,3 +19,7 @@ export const getDetailClassApi = (id: string): Promise<any> => {
 export const updateClassApi = (id: string, data: ClassEntity): Promise<any> => {
   return apiSchool.put(`/classes/${id}`, data);
 };
+
+export const getSearchNameClassApi = (name: string): Promise<any> => {
+  return apiSchool.get("/classes/class-combobox", { name });
+};

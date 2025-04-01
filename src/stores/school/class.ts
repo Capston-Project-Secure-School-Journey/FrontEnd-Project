@@ -3,10 +3,11 @@ import {
   getDetailClassApi,
   getGradeListApi,
   getListClassApi,
+  getSearchNameClassApi,
   updateClassApi,
 } from "~/api/school/class";
 import type { ErrorEntity } from "~/entities/api-error";
-import type { MetaDataEntity } from "~/entities/common";
+import type { MetaDataEntity, OptionSelect } from "~/entities/common";
 import type {
   ClassCommonEntity,
   ClassEntity,
@@ -21,6 +22,7 @@ interface State {
   classes: ClassCommonEntity[];
   grades: GradeEntity[];
   class: ClassEntity;
+  classSearch: OptionSelect[];
   metaData: MetaDataEntity;
 }
 
@@ -30,6 +32,7 @@ const defaultState: State = {
   actionsStatus: false,
   errors: {},
   classes: [],
+  classSearch: [],
   grades: [],
   class: {},
   metaData: {},
@@ -152,6 +155,29 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
         });
 
       this.$state.isLoading = false;
+    },
+
+    /**
+     * Get list school
+     *
+     * @param params Pagination Params
+     */
+    async getSearchNameClass(name: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await getSearchNameClassApi(name)
+        .then((result) => {
+          this.$state.metaData = result;
+          this.$state.classSearch = result as OptionSelect[];
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
     },
   },
 });

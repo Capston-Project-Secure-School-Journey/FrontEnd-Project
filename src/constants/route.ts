@@ -39,6 +39,7 @@ export const SCHOOL_ROUTE = {
   TEACHERS: "/teachers",
   CREATE_TEACHER: "/teachers/create",
   SCHEDULE: "/schedule",
+  CREATE_SCHEDULE: "/schedule/create",
 };
 
 export const SCHOOL_MENU: MenuItemEntity[] = [

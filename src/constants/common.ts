@@ -54,3 +54,5 @@ export const SNACKBAR_COLOR = {
  */
 export const ALLOW_TYPE_IMAGE = ["image/jpg", "image/jpeg", "image/png"];
 export const ALLOW_SIZE_IMAGE = 5; // type: Mb
+
+export const UNKNOWN_ERROR = "Something went wrong!!";

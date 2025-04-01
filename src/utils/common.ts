@@ -1,4 +1,12 @@
 import { ALLOW_SIZE_IMAGE, ALLOW_TYPE_IMAGE } from "~/constants/common";
+import {
+  SCHEDULE_SESSION_COLOR_ENUM,
+  SCHEDULE_SESSION_ENUM,
+} from "~/constants/school";
+import type {
+  EventDisplayEntity,
+  ScheduleMonthEntity,
+} from "~/entities/school/schedule";
 
 /**
  * Delay function
@@ -139,4 +147,77 @@ export const imageValidation = (file: File) => {
   });
 
   return isValidSuffix;
+};
+
+/**
+ * get current index week
+ * @param date input date
+ * @returns index of week
+ */
+export const getWeekNumber = (date: Date = new Date()): number => {
+  const startOfYear = new Date(date.getFullYear(), 0, 1);
+  const diff = date.getTime() - startOfYear.getTime(); // Lấy timestamp
+  const oneWeek = 1000 * 60 * 60 * 24 * 7;
+
+  return Math.ceil(diff / oneWeek + startOfYear.getDay() / 7);
+};
+
+export const getMinDate = (
+  date: Date = new Date(),
+  range: number = 0,
+  today: boolean = true
+): string => {
+  const targetDate = new Date(date);
+
+  if (!today) {
+    targetDate.setDate(date.getDate() + ((8 - date.getDay()) % 7 || 7));
+  }
+  targetDate.setDate(targetDate.getDate() + range);
+
+  return targetDate.toISOString().split("T")[0];
+};
+
+export const getMaxDate = (
+  date: Date = new Date(),
+  range: number = 6
+): string => {
+  const minDate = new Date(getMinDate(date));
+  minDate.setDate(minDate.getDate() + range);
+
+  return minDate.toISOString().split("T")[0];
+};
+
+export const mappingSchedule = (scheduleMonth: ScheduleMonthEntity) => {
+  if (scheduleMonth.classSchedules) {
+    const eventsMonth: EventDisplayEntity[] = [];
+    Object.entries(scheduleMonth.classSchedules).forEach(([date, events]) => {
+      events.forEach((event) => {
+        let start = new Date();
+        let end = new Date();
+        if (event.sessionType === SCHEDULE_SESSION_ENUM.MORNING) {
+          start = new Date(`${event.date} 7:00`);
+          end = new Date(`${event.date} 12:00`);
+        } else if (event.sessionType === SCHEDULE_SESSION_ENUM.AFTERNOON) {
+          start = new Date(`${event.date} 13:00`);
+          end = new Date(`${event.date} 17:00`);
+        } else {
+          start = new Date(event.date);
+          end = new Date(event.date);
+        }
+
+        eventsMonth.push({
+          title: event.textDisplay,
+          start,
+          end,
+          allDay: event.sessionType === SCHEDULE_SESSION_ENUM.FULL_DAY,
+          color:
+            SCHEDULE_SESSION_COLOR_ENUM[
+              event.sessionType as keyof typeof SCHEDULE_SESSION_COLOR_ENUM
+            ],
+        });
+      });
+    });
+
+    return eventsMonth;
+  }
 };

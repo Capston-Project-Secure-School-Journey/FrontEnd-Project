@@ -6,5 +6,5 @@ export const loginApi = (entity: SchoolLoginEntity): Promise<any> => {
     password: entity.password,
   };
 
-  return apiSchool.post("/authen/login", school);
+  return apiSchool.post("/auth/login", school);
 };
