@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isEmpty, debounce } from "lodash-es";
 import {
   GENDER_NAME,
   PAGE_LIMIT_DEFAULT,
@@ -7,10 +8,15 @@ import {
   SNACKBAR_INFO_STATUS,
 } from "~/constants/common";
 import CopyBlock from "~/components/common/CopyBlock.vue";
-import type { QueryParamEntity, SnackbarProp } from "~/entities/common";
+import {
+  type OptionSelect,
+  type QueryParamEntity,
+  type SnackbarProp,
+} from "~/entities/common";
 import type { StudentCommonEntity } from "~/entities/school/student";
 import { StudentSchoolStore } from "~/stores/school/student";
 import { SCHOOL_ROUTE } from "~/constants/route";
+import { ClassSchoolStore } from "~/stores/school/class";
 
 const pageName = "Quản lý Học sinh";
 
@@ -96,6 +102,31 @@ const copyToClipboard = (data: SnackbarProp) => {
   copyStatus.value = data;
 };
 
+// Handle search by class
+const selectedClass = ref<OptionSelect>();
+const searchClass = ref<string>("");
+const classSchoolStore = ClassSchoolStore();
+const resultSearchClasses = computed(() => classSchoolStore.classSearch);
+
+const handleSearchClass = debounce((name: string) => {
+  if (!isEmpty(name)) {
+    classSchoolStore.getSearchNameClass(name);
+  }
+}, 500);
+
+const handleChangeSelectedSearchClass = async () => {
+  queryParamEntity.value = Object.assign(
+    { ClassId: selectedClass.value?.id },
+    queryParamEntity.value
+  );
+
+  await studentSchoolStore.getListStudent(queryParamEntity.value);
+};
+
+watch(searchClass, (newSearch) => {
+  handleSearchClass(newSearch);
+});
+
 onMounted(async () => {
   await studentSchoolStore.getListStudent(queryParamEntity.value);
 });
@@ -124,14 +155,32 @@ onMounted(async () => {
         :items-per-page="queryParamEntity.limit"
       >
         <template v-slot:top>
-          <div class="pa-2 d-flex justify-start">
-            <v-btn
-              text="Xoá"
-              :disabled="selectedStudent.length === 0"
-              color="error"
-              :onclick="() => (showDialogDelete = true)"
-            ></v-btn>
-          </div>
+          <v-row class="d-flex pa-2 ga-2">
+            <v-col class="pa-2">
+              <v-autocomplete
+                auto-select-first="exact"
+                label="Tìm kiếm theo lớp"
+                item-title="name"
+                item-value="id"
+                v-model="selectedClass"
+                v-model:search="searchClass"
+                :items="resultSearchClasses"
+                chips
+                clearable
+                no-data-text="Không có dữ liệu"
+                return-object
+                @update:model-value="handleChangeSelectedSearchClass"
+              ></v-autocomplete>
+            </v-col>
+            <v-col class="pa-2 d-flex justify-end">
+              <v-btn
+                text="Xoá"
+                :disabled="selectedStudent.length === 0"
+                color="error"
+                :onclick="() => (showDialogDelete = true)"
+              ></v-btn>
+            </v-col>
+          </v-row>
         </template>
 
         <template v-slot:loading>

@@ -167,7 +167,7 @@ const onSubmit = handleSubmit(async () => {
     await classSchoolStore.createClass(entity);
 
     if (!isLoading.value && isSucceed.value) {
-      // navigateTo(SCHOOL_ROUTE.CLASSES);
+      navigateTo(SCHOOL_ROUTE.CLASSES);
     }
   } else {
     emits("submit", entity);

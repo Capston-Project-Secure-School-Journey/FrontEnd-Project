@@ -42,8 +42,8 @@ onMounted(async () => {
       <v-row>
         <h2>Lịch học của toàn trường</h2>
       </v-row>
-      <v-row class="d-none justify-space-between">
-        <v-col>
+      <v-row class="d-flex justify-space-between">
+        <v-col class="d-none">
           <v-select
             auto-select-first="exact"
             label="Xem chi tiết lịch trong tuần"
@@ -55,7 +55,7 @@ onMounted(async () => {
             @update:model-value="weekOptionChange"
           ></v-select>
         </v-col>
-        <v-col>
+        <v-col class="d-none">
           <v-btn class="mr-3" text="Xem chi tiết" color="primary"></v-btn>
         </v-col>
         <v-col class="d-flex justify-end">
