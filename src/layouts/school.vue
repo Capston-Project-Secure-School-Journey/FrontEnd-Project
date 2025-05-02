@@ -15,6 +15,26 @@ const me = computed(() => schoolAuthStore.me);
 const logout = () => {
   schoolAuthStore.logout(USER_TYPE_ENUM.SCHOOL_ADMIN);
 };
+
+const { requestPermission } = useFirebaseMessaging();
+
+onMounted(() => {
+  requestPermission();
+});
+
+const messageShow = ref<boolean>(false);
+const snackbarMessage = ref<string>("");
+
+if (typeof window !== "undefined") {
+  const channel = new BroadcastChannel("fcm_channel");
+  channel.onmessage = (event) => {
+    const { title, body } = event.data;
+    console.log(title, body);
+
+    snackbarMessage.value = `${title}: ${body}`;
+    messageShow.value = true;
+  };
+}
 </script>
 <template>
   <v-layout class="rounded rounded-md">
@@ -49,5 +69,18 @@ const logout = () => {
     >
       <slot />
     </v-main>
+
+    <v-snackbar
+      id="notification_status"
+      v-model="messageShow"
+      :location="'top right'"
+    >
+      {{ snackbarMessage }}
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="messageShow = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-layout>
 </template>

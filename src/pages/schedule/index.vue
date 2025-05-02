@@ -30,11 +30,16 @@ const handleMonthChange = async (newDay: string) => {
   await schoolScheduleStore.getSchedule(currentDate);
 };
 
+const open = ref(false);
+
 onMounted(async () => {
   await schoolScheduleStore.getSchedule(
     convertDateTimeServer(new Date().toLocaleDateString().split("T")[0])
   );
 });
+
+const viewModelOptions = ["day", "week", "month"];
+const viewModel = ref<string>("month");
 </script>
 <template>
   <v-container>
@@ -43,7 +48,16 @@ onMounted(async () => {
         <h2>Lịch học của toàn trường</h2>
       </v-row>
       <v-row class="d-flex justify-space-between">
-        <v-col class="d-none">
+        <v-col>
+          <v-select
+            label="Chế độ xem"
+            v-model="viewModel"
+            :items="viewModelOptions"
+            :return-object="true"
+            @update:model-value="weekOptionChange"
+          ></v-select>
+        </v-col>
+        <v-col>
           <v-select
             auto-select-first="exact"
             label="Xem chi tiết lịch trong tuần"
@@ -55,7 +69,7 @@ onMounted(async () => {
             @update:model-value="weekOptionChange"
           ></v-select>
         </v-col>
-        <v-col class="d-none">
+        <v-col>
           <v-btn class="mr-3" text="Xem chi tiết" color="primary"></v-btn>
         </v-col>
         <v-col class="d-flex justify-end">
@@ -74,6 +88,7 @@ onMounted(async () => {
       v-model="today"
       color="primary"
       type="month"
+      :view-mode="viewModel"
       :day="test"
       @update:model-value="handleMonthChange"
       :events="events"
@@ -81,27 +96,45 @@ onMounted(async () => {
       <template v-slot:event="{ day, event }">
         <v-tooltip location="top">
           <template v-slot:activator="{ props }">
-            <v-chip v-bind="props" :color="event.color" class="w-100 pa-1">
-              <span class="text-truncate">{{ event.title }}</span>
+            <v-chip
+              v-bind="props"
+              :color="event.color"
+              class="w-100 pa-1"
+              style="max-width: 150px"
+            >
+              <span
+                v-for="title in event.title"
+                class="text-medium-emphasis text-truncate"
+                style="
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                "
+                >{{ title }}</span
+              >
             </v-chip>
           </template>
           <template v-slot:default>
             <v-card class="tooltip-card" elevation="2">
               <v-card-text>
-                <h3 v-html="event.title"></h3>
+                <h3 v-for="title in event.title" v-html="title"></h3>
                 <div class="d-flex ga-2 align-center">
                   <v-icon>mdi-clock</v-icon>
                   <p>{{ new Date(event.start).toLocaleDateString() }}</p>
                   <p>Từ {{ new Date(event.start).toLocaleTimeString() }}</p>
                   <p>Đến {{ new Date(event.end).toLocaleTimeString() }}</p>
                 </div>
+                <div class="d-flex ga-2 flex-column">
+                  <p class="text-bold">Note</p>
+                  <p>{{ event.note }}</p>
+                </div>
               </v-card-text>
             </v-card>
           </template>
         </v-tooltip>
       </template>
-    </v-calendar></v-container
-  >
+    </v-calendar>
+  </v-container>
 </template>
 
 <style scoped>
@@ -109,8 +142,19 @@ onMounted(async () => {
   background: white !important;
 }
 
+::v-deep(.v-calendar-weekly__day-content) {
+  height: 100%;
+}
+
+.text-truncate {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
 .tooltip-card {
-  max-width: 100%;
+  width: 100%;
   padding: 0 auto;
   background: white;
   color: black;

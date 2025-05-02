@@ -214,6 +214,7 @@ export const mappingSchedule = (scheduleMonth: ScheduleMonthEntity) => {
             SCHEDULE_SESSION_COLOR_ENUM[
               event.sessionType as keyof typeof SCHEDULE_SESSION_COLOR_ENUM
             ],
+          note: event.note,
         });
       });
     });

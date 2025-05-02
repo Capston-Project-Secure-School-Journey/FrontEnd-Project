@@ -20,13 +20,14 @@ export interface EventDetailEntity {
   note?: string;
   scheduleType?: number;
   sessionType?: number;
-  textDisplay?: string;
+  textDisplay?: string[];
 }
 
 export interface EventDisplayEntity {
-  title?: string;
+  title?: string[];
   start?: Date;
   end?: Date;
   allDay?: boolean;
   color?: string;
+  note?: string;
 }

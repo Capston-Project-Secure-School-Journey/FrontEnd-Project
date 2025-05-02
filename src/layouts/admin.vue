@@ -6,11 +6,31 @@ import { AdminAuthStore } from "~/stores/admin/auth";
 const storeAdmin = AdminAuthStore();
 const route = useRoute();
 
+const { requestPermission } = useFirebaseMessaging();
+
+onMounted(() => {
+  requestPermission();
+});
+
 const isOpen = ref<boolean>(true);
 
 const logout = () => {
   storeAdmin.logout(USER_TYPE_ENUM.ADMIN);
 };
+
+const messageShow = ref<boolean>(false);
+const snackbarMessage = ref<string>("");
+const snackbarTitle = ref<string>("");
+
+if (typeof window !== "undefined") {
+  const channel = new BroadcastChannel("fcm_channel");
+  channel.onmessage = (event) => {
+    const { title, body } = event.data;
+    snackbarTitle.value = title;
+    snackbarMessage.value = body;
+    messageShow.value = true;
+  };
+}
 </script>
 <template>
   <v-layout class="rounded rounded-md">
@@ -41,5 +61,19 @@ const logout = () => {
     >
       <slot />
     </v-main>
+
+    <v-snackbar
+      id="notification_status"
+      v-model="messageShow"
+      :location="'top right'"
+      :title="snackbarTitle"
+    >
+      {{ snackbarMessage }}
+      <template v-slot:actions>
+        <v-btn color="pink" variant="text" @click="messageShow = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-layout>
 </template>

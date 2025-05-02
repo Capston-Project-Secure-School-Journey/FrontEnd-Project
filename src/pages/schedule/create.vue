@@ -38,6 +38,7 @@ const exclusionClass = ref<OptionSelect[]>([]);
 const selectedExclusionGrade = ref<OptionSelect[]>([]);
 const exclusionClassSearch = ref<string>("");
 const exclusionGradeSearch = ref<string>("");
+const note = ref<string>("");
 const selectedSession = ref<OptionSelect>(SCHEDULE_SESSION_OPTIONS[0]);
 const gradeChange = async () => {
   await classSchoolStore.getListClass({ grade: selectedGrade.value.id });
@@ -99,7 +100,7 @@ const handleCreateSchedule = async () => {
   const promises = scheduleDate.value.map(async (_) => {
     const entity: CreateScheduleEntity = {
       date: convertDateTimeServer(_.toLocaleDateString().split("T")[0]),
-      note: "",
+      note: note,
       sessionType: Number(selectedSession.value.id),
       scheduleType: Number(selectedScheduleType.value.id),
     };
@@ -294,7 +295,7 @@ onMounted(async () => {
           ></v-select>
           <v-select
             v-if="
-              [SCHEDULE_TYPE_ENUM.GRADE, SCHEDULE_TYPE_ENUM.CLASS].includes(
+              [SCHEDULE_TYPE_ENUM.GRADE].includes(
                 Number(selectedScheduleType.id)
               )
             "
@@ -314,6 +315,11 @@ onMounted(async () => {
         </v-col>
         <v-col>
           <v-btn
+            v-if="
+              [SCHEDULE_TYPE_ENUM.GRADE, SCHEDULE_TYPE_ENUM.SCHOOL].includes(
+                Number(selectedScheduleType.id)
+              )
+            "
             class="mr-3"
             text="Tạo mới"
             color="primary"
@@ -387,6 +393,13 @@ onMounted(async () => {
         >
           Thêm
         </v-btn>
+      </v-row>
+
+      <h3 class="p-2">6. Thêm ghi chú</h3>
+      <v-row class="mb-3 justify-end">
+        <v-col>
+          <v-textarea label="Mô tả thêm" v-model="note"></v-textarea>
+        </v-col>
       </v-row>
     </v-card>
 
