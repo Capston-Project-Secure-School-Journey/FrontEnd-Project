@@ -70,7 +70,12 @@ const viewModel = ref<string>("month");
           ></v-select>
         </v-col>
         <v-col>
-          <v-btn class="mr-3" text="Xem chi tiết" color="primary"></v-btn>
+          <v-btn
+            class="mr-3"
+            text="Xem chi tiết"
+            color="primary"
+            :onclick="() => navigateTo(SCHOOL_ROUTE.DETAIL_DATE)"
+          ></v-btn>
         </v-col>
         <v-col class="d-flex justify-end">
           <v-btn

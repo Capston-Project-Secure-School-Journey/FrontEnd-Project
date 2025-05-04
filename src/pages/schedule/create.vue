@@ -11,6 +11,7 @@ import {
 import type { OptionSelect } from "~/entities/common";
 import type { CreateScheduleEntity } from "~/entities/school/schedule";
 import { ClassSchoolStore } from "~/stores/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 import { SchoolScheduleStore } from "~/stores/school/schedule";
 
 const pageName = "Tạo mới Lịch học";
@@ -25,9 +26,13 @@ definePageMeta({
 const selectedScheduleType = ref<OptionSelect>(SCHEDULE_TYPE_OPTIONS[2]);
 // Handle search class
 const classSchoolStore = ClassSchoolStore();
+const schoolMetaData = SchoolMetaDataStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
 const isLoadingClass = computed(() => classSchoolStore.isLoading);
-const grades = computed(() => classSchoolStore.grades);
-const resultSearchChooseClasses = computed(() => classSchoolStore.classSearch);
+const grades = computed(() => schoolMetaData.grades);
+const resultSearchChooseClasses = computed(
+  () => schoolMetaDataStore.classSearch
+);
 const selectedGrade = ref<OptionSelect>(grades.value[0]);
 const selectedClass = ref<OptionSelect[]>([]);
 const searchClassName = ref<string>("");
@@ -80,7 +85,7 @@ const scheduleTypeChange = async () => {
 
 const handleSearchExclusionClass = debounce((name: string) => {
   if (!isEmpty(name)) {
-    classSchoolStore.getSearchNameClass(name);
+    schoolMetaDataStore.getDataClassList(name);
   }
 }, 500);
 
@@ -96,11 +101,17 @@ const errors = computed(() => schoolScheduleStore.errors);
 const errorQueue = ref<string[]>([]);
 const handleCreateSchedule = async () => {
   if (!scheduleDate.value) return;
+
+  errorQueue.value = [];
+  schoolScheduleStore.errors = null;
+  displaySnackQueue.value = false;
+  currentErrorMessage.value = "";
+
   errorQueue.value = [];
   const promises = scheduleDate.value.map(async (_) => {
     const entity: CreateScheduleEntity = {
       date: convertDateTimeServer(_.toLocaleDateString().split("T")[0]),
-      note: note,
+      note: note.value,
       sessionType: Number(selectedSession.value.id),
       scheduleType: Number(selectedScheduleType.value.id),
     };
@@ -121,6 +132,7 @@ const handleCreateSchedule = async () => {
     }
 
     await schoolScheduleStore.createSchedule(entity);
+
     if (!isEmpty(errors.value?.message)) {
       displaySnackQueue.value = true;
       currentErrorMessage.value = errors.value?.message;
@@ -130,7 +142,7 @@ const handleCreateSchedule = async () => {
 
   await Promise.all(promises);
 
-  if (errorQueue.value) {
+  if (errorQueue.value && errorQueue.value.length > 0) {
     displaySnackQueue.value = true;
     currentErrorMessage.value = errorQueue.value[0];
   } else {
@@ -168,7 +180,8 @@ const handleCloseSnackbar = () => {
 };
 
 onMounted(async () => {
-  await classSchoolStore.getGradeList();
+  await schoolMetaData.getDataGradeList();
+  errorQueue.value = [];
 });
 </script>
 <template>
@@ -383,6 +396,13 @@ onMounted(async () => {
         </v-col>
       </v-row>
 
+      <h3 class="p-2">6. Thêm ghi chú</h3>
+      <v-row class="mb-3 justify-end">
+        <v-col>
+          <v-textarea label="Mô tả thêm" v-model="note"></v-textarea>
+        </v-col>
+      </v-row>
+
       <v-row class="mb-3 justify-end">
         <v-btn
           :loading="isLoadingSchedule"
@@ -393,13 +413,6 @@ onMounted(async () => {
         >
           Thêm
         </v-btn>
-      </v-row>
-
-      <h3 class="p-2">6. Thêm ghi chú</h3>
-      <v-row class="mb-3 justify-end">
-        <v-col>
-          <v-textarea label="Mô tả thêm" v-model="note"></v-textarea>
-        </v-col>
       </v-row>
     </v-card>
 

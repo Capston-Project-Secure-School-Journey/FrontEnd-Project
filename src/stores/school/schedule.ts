@@ -1,7 +1,14 @@
-import { createScheduleApi, getScheduleApi } from "~/api/school/schedule";
+import {
+  createScheduleApi,
+  deleteDetailScheduleDateApi,
+  getDetailScheduleDateApi,
+  getScheduleApi,
+  updateDetailScheduleDateApi,
+} from "~/api/school/schedule";
 import type { ErrorEntity } from "~/entities/api-error";
 import type {
   CreateScheduleEntity,
+  EventDetailEntity,
   EventDisplayEntity,
   ScheduleMonthEntity,
 } from "~/entities/school/schedule";
@@ -12,6 +19,7 @@ interface State {
   errors: ErrorEntity | null;
   schedule: ScheduleMonthEntity;
   events: EventDisplayEntity[];
+  scheduleData: EventDetailEntity[];
 }
 
 const defaultState: State = {
@@ -20,6 +28,7 @@ const defaultState: State = {
   errors: null,
   schedule: {},
   events: [],
+  scheduleData: [],
 };
 
 export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
@@ -63,7 +72,57 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
       this.$state.isLoading = true;
       this.$state.isSucceed = false;
       await createScheduleApi(data)
-        .then((result) => {})
+        .then((result) => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async getDetailScheduleDate(date: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await getDetailScheduleDateApi(date)
+        .then((result) => {
+          this.$state.scheduleData = result;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async updateDetailScheduleDate(data: EventDetailEntity) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await updateDetailScheduleDateApi(data)
+        .then(() => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.data;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async deleteDetailScheduleDate(id: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await deleteDetailScheduleDateApi(id)
+        .then(() => {
+          this.$state.isSucceed = true;
+        })
         .catch((err) => {
           this.$state.errors = err.data;
         })

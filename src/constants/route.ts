@@ -40,6 +40,7 @@ export const SCHOOL_ROUTE = {
   CREATE_TEACHER: "/teachers/create",
   SCHEDULE: "/schedule",
   CREATE_SCHEDULE: "/schedule/create",
+  DETAIL_DATE: "/schedule/detailDate",
 };
 
 export const SCHOOL_MENU: MenuItemEntity[] = [

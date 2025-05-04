@@ -13,6 +13,7 @@ export interface ScheduleMonthEntity {
 }
 
 export interface EventDetailEntity {
+  id?: string;
   classId?: string;
   className?: string;
   date?: string;

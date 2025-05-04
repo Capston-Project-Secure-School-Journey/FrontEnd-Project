@@ -16,7 +16,7 @@ import {
 import type { StudentCommonEntity } from "~/entities/school/student";
 import { StudentSchoolStore } from "~/stores/school/student";
 import { SCHOOL_ROUTE } from "~/constants/route";
-import { ClassSchoolStore } from "~/stores/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 
 const pageName = "Quản lý Học sinh";
 
@@ -27,6 +27,7 @@ definePageMeta({
 });
 
 const studentSchoolStore = StudentSchoolStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
 const students = computed(() => studentSchoolStore.students);
 const errors = computed(() => studentSchoolStore.errors);
 const isLoading = computed(() => studentSchoolStore.isLoading);
@@ -105,25 +106,31 @@ const copyToClipboard = (data: SnackbarProp) => {
 // Handle search by class
 const selectedClass = ref<OptionSelect>();
 const searchClass = ref<string>("");
-const classSchoolStore = ClassSchoolStore();
-const resultSearchClasses = computed(() => classSchoolStore.classSearch);
+const resultSearchClasses = computed(() => schoolMetaDataStore.classSearch);
 
 const handleSearchClass = debounce((name: string) => {
   if (!isEmpty(name)) {
-    classSchoolStore.getSearchNameClass(name);
+    schoolMetaDataStore.getDataClassList(name);
   }
 }, 500);
 
 const handleChangeSelectedSearchClass = async () => {
-  queryParamEntity.value = Object.assign(
-    { ClassId: selectedClass.value?.id },
-    queryParamEntity.value
-  );
+  if (selectedClass.value?.id) {
+    queryParamEntity.value = Object.assign(
+      { ClassId: selectedClass.value?.id },
+      queryParamEntity.value
+    );
+  } else {
+    const { ClassId, ...rest } = queryParamEntity.value;
+    queryParamEntity.value = rest;
+  }
 
   await studentSchoolStore.getListStudent(queryParamEntity.value);
 };
 
 watch(searchClass, (newSearch) => {
+  console.log(newSearch);
+
   handleSearchClass(newSearch);
 });
 
@@ -192,7 +199,7 @@ onMounted(async () => {
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <a :href="`${SCHOOL_ROUTE.STUDENTS}/${item.id}`">
+          <a :href="`${SCHOOL_ROUTE.STUDENTS}/${item?.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
           </a>
         </template>
@@ -210,7 +217,15 @@ onMounted(async () => {
               <v-pagination
                 v-model="queryParamEntity.page"
                 class="w-100"
-                :length="Math.ceil(metaData.total / queryParamEntity.limit)"
+                :length="
+                  Math.max(
+                    1,
+                    Math.ceil(
+                      (metaData.total || 0) /
+                        (queryParamEntity.limit || PAGE_LIMIT_DEFAULT)
+                    )
+                  )
+                "
               >
               </v-pagination>
             </v-col>

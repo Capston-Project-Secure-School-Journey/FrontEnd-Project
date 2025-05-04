@@ -2,6 +2,7 @@
 import { MODE_FORM_CREATE } from "~/constants/common";
 import ClassForm from "~/components/school/ClassForm.vue";
 import { ClassSchoolStore } from "~/stores/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 const pageName = "Tạo mới Lớp học";
 
 definePageMeta({
@@ -10,11 +11,11 @@ definePageMeta({
   name: pageName,
 });
 
-const classSchoolStore = ClassSchoolStore();
-const grades = computed(() => classSchoolStore.grades);
+const schoolMetaDataStore = SchoolMetaDataStore();
+const grades = computed(() => schoolMetaDataStore.grades);
 
 onMounted(async () => {
-  await classSchoolStore.getGradeList();
+  await schoolMetaDataStore.getDataGradeList();
 });
 </script>
 <template>

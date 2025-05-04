@@ -7,7 +7,9 @@ import {
 } from "~/constants/common";
 import { SCHOOL_ROUTE } from "~/constants/route";
 import type { QueryParamEntity } from "~/entities/common";
+import type { ClassCommonEntity } from "~/entities/school/class";
 import { ClassSchoolStore } from "~/stores/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 
 const pageName = "Quản lý lớp học";
 
@@ -18,9 +20,12 @@ definePageMeta({
 });
 
 const classSchoolStore = ClassSchoolStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
 const isLoading = computed(() => classSchoolStore.isLoading);
 const classes = computed(() => classSchoolStore.classes);
 const metaData = computed(() => classSchoolStore.metaData);
+const grades = computed(() => schoolMetaDataStore.grades);
+
 const copyStatus = ref<{
   status: boolean;
   message: string;
@@ -36,7 +41,12 @@ const queryParamEntity = ref<QueryParamEntity>({
 const headers = [
   { title: "Mã", key: "id", value: "id" },
   { title: "Lớp", key: "className", value: "className" },
-  { title: "Khối", key: "grade", value: "grade" },
+  {
+    title: "Khối",
+    key: "grade",
+    value: (item: ClassCommonEntity) =>
+      grades?.value.filter((grade) => grade.id === item.grade)[0].name,
+  },
   { title: "Số lượng", key: "numberOfStudent", value: "numberOfStudent" },
   { title: "Chi tiết", key: "actions" },
 ];
@@ -57,6 +67,7 @@ const copyToClipboard = (data: string) => {
 };
 
 onMounted(async () => {
+  await schoolMetaDataStore.getDataGradeList();
   await classSchoolStore.getListClass(queryParamEntity.value);
 });
 </script>
