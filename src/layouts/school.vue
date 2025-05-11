@@ -1,40 +1,18 @@
 <script lang="ts" setup>
 import { USER_TYPE_ENUM } from "~/constants/authentication";
-import { USER_TYPE_NAME } from "~/constants/authentication";
 import { SCHOOL_MENU } from "~/constants/route";
 import type { MenuItemEntity } from "~/entities/common";
 import { SchoolAuthStore } from "~/stores/school/auth";
+import NotificationButton from "~/components/common/NotificationButton.vue";
 
 const schoolAuthStore = SchoolAuthStore();
-
 const route = useRoute();
 const isOpen = ref<boolean>(true);
 const menu = ref<MenuItemEntity[]>(SCHOOL_MENU);
-const me = computed(() => schoolAuthStore.me);
 
 const logout = () => {
   schoolAuthStore.logout(USER_TYPE_ENUM.SCHOOL_ADMIN);
 };
-
-const { requestPermission } = useFirebaseMessaging();
-
-onMounted(() => {
-  requestPermission();
-});
-
-const messageShow = ref<boolean>(false);
-const snackbarMessage = ref<string>("");
-
-if (typeof window !== "undefined") {
-  const channel = new BroadcastChannel("fcm_channel");
-  channel.onmessage = (event) => {
-    const { title, body } = event.data;
-    console.log(title, body);
-
-    snackbarMessage.value = `${title}: ${body}`;
-    messageShow.value = true;
-  };
-}
 </script>
 <template>
   <v-layout class="rounded rounded-md">
@@ -43,6 +21,7 @@ if (typeof window !== "undefined") {
         <v-app-bar-nav-icon @click.stop="isOpen = !isOpen"></v-app-bar-nav-icon>
       </template>
       <template v-slot:append>
+        <NotificationButton />
         <v-btn icon="mdi-logout" :onclick="logout"></v-btn>
       </template>
     </v-app-bar>
@@ -69,18 +48,15 @@ if (typeof window !== "undefined") {
     >
       <slot />
     </v-main>
-
-    <v-snackbar
-      id="notification_status"
-      v-model="messageShow"
-      :location="'top right'"
-    >
-      {{ snackbarMessage }}
-      <template v-slot:actions>
-        <v-btn color="pink" variant="text" @click="messageShow = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-layout>
 </template>
+
+<style scoped>
+.notification-dropdown {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>

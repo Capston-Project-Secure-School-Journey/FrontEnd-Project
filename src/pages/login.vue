@@ -33,6 +33,7 @@ const onSubmit = handleSubmit(async (values) => {
   };
 
   await store.login(schoolLogin);
+
   if (!isLoading.value && !isSucceed.value && errorsApi.value) {
     display.value = true;
   }

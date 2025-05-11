@@ -39,6 +39,8 @@ if (typeof window !== "undefined") {
         <v-app-bar-nav-icon @click.stop="isOpen = !isOpen"></v-app-bar-nav-icon>
       </template>
       <template v-slot:append>
+        <v-btn icon="fa-solid fa-bell"></v-btn>
+
         <v-btn icon="mdi-logout" :onclick="logout"></v-btn>
       </template>
     </v-app-bar>

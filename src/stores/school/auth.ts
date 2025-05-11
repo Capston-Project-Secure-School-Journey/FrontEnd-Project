@@ -3,6 +3,7 @@ import { loginApi } from "~/api/school/auth";
 import {
   ADMIN_LAST_WORKSPACE,
   ADMIN_TOKEN,
+  ENTITY_ID,
   SCHOOL_LAST_WORKSPACE,
   SCHOOL_TOKEN,
   USER_TYPE_ENUM,
@@ -56,6 +57,7 @@ export const SchoolAuthStore = defineStore("SchoolAuthStore", {
             const lastWorkspace = getLastWorkspace(SCHOOL_LAST_WORKSPACE);
             const redirectUrl = lastWorkspace ?? SCHOOL_ROUTE.DASHBOARD;
             setToken(SCHOOL_TOKEN, result.token);
+            setToken(ENTITY_ID, result.id);
             navigateTo(redirectUrl, { external: true });
           }
         })
