@@ -45,7 +45,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <v-container class="w-100">
+  <v-container fluid class="w-100">
     <TeacherForm
       v-if="!isLoading && teacher"
       :mode="MODE_FORM_UPDATE"

@@ -41,6 +41,8 @@ export const SCHOOL_ROUTE = {
   SCHEDULE: "/schedule",
   CREATE_SCHEDULE: "/schedule/create",
   DETAIL_DATE: "/schedule/detailDate",
+  TRIPS: "/trips",
+  DETAIL_TRIP: "/trips/detailTrip",
 };
 
 export const SCHOOL_MENU: MenuItemEntity[] = [
@@ -85,5 +87,12 @@ export const SCHOOL_MENU: MenuItemEntity[] = [
     icon: "mdi-calendar-blank-multiple",
     label: "Quản lý Lịch học",
     url: SCHOOL_ROUTE.SCHEDULE,
+  },
+  {
+    key: "TRIPS",
+    active: false,
+    icon: "mdi-bus",
+    label: "Quản lý chuyến đi",
+    url: SCHOOL_ROUTE.TRIPS,
   },
 ];

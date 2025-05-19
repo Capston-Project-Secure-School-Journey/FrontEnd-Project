@@ -11,7 +11,7 @@ definePageMeta({
 });
 </script>
 <template>
-  <v-container class="h-100 pa-2">
+  <v-container fluid class="h-100 pa-2">
     <TeacherForm :mode="MODE_FORM_CREATE" />
   </v-container>
 </template>

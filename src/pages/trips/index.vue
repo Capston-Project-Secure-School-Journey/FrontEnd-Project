@@ -1,8 +1,8 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { SCHOOL_ROUTE } from "~/constants/route";
-import type { OptionSelect } from "~/entities/common";
-import { SchoolScheduleStore } from "~/stores/school/schedule";
-const pageName = "Quản lý Lịch học";
+import { SchoolTripStore } from "~/stores/school/trip";
+
+const pageName = "Chi tiết lịch chuyến đi trong ngày";
 
 definePageMeta({
   layout: "school",
@@ -10,57 +10,51 @@ definePageMeta({
   name: pageName,
 });
 
-const schoolScheduleStore = SchoolScheduleStore();
+const schoolTripStore = SchoolTripStore();
+const isLoading = computed(() => schoolTripStore.isLoading);
+const isSucceed = computed(() => schoolTripStore.isSucceed);
+const events = computed(() => schoolTripStore.events);
 const today = ref();
-const test = ref();
-const events = computed(() => schoolScheduleStore.events);
 
 const handleMonthChange = async (newDay: string) => {
   const currentDate = convertDateTimeServer(
     new Date(newDay).toLocaleDateString().split("T")[0]
   );
 
-  await schoolScheduleStore.getSchedule(currentDate);
+  await schoolTripStore.getListTripCalendar(currentDate);
 };
 
-const open = ref(false);
-
 onMounted(async () => {
-  await schoolScheduleStore.getSchedule(
+  await schoolTripStore.getListTripCalendar(
     convertDateTimeServer(new Date().toLocaleDateString().split("T")[0])
   );
 });
 </script>
 <template>
   <v-container fluid class="w-100 d-flex ga-2 flex-column">
-    <h2 class="pb-3 w-100">Lịch học của toàn trường</h2>
+    <div class="w-100 d-flex justify-space-between">
+      <h2>
+        {{ pageName }}
+      </h2>
+    </div>
     <v-row class="w-100">
       <v-col>
         <v-btn
           class="mr-3"
           text="Xem chi tiết"
           color="primary"
-          :onclick="() => navigateTo(SCHOOL_ROUTE.DETAIL_DATE)"
-        ></v-btn>
-      </v-col>
-      <v-col class="d-flex justify-end">
-        <v-btn
-          class="mr-3"
-          text="Tạo mới"
-          color="primary"
-          :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_SCHEDULE)"
+          :onclick="() => navigateTo(SCHOOL_ROUTE.DETAIL_TRIP)"
         ></v-btn>
       </v-col>
     </v-row>
     <v-calendar
+      class="w-100 h-100"
       v-model="today"
       color="primary"
       type="month"
       view-mode="month"
-      :day="test"
       @update:model-value="handleMonthChange"
       :events="events"
-      style="flex: 1; max-height: (100vh -100px)"
     >
       <template v-slot:event="{ day, event }">
         <v-tooltip location="top">
@@ -93,10 +87,7 @@ onMounted(async () => {
                   <p>Từ {{ new Date(event.start).toLocaleTimeString() }}</p>
                   <p>Đến {{ new Date(event.end).toLocaleTimeString() }}</p>
                 </div>
-                <div class="d-flex ga-2 flex-column">
-                  <p class="text-bold">Note</p>
-                  <p>{{ event.note }}</p>
-                </div>
+                <p>{{ event.note }}</p>
               </v-card-text>
             </v-card>
           </template>
@@ -105,29 +96,3 @@ onMounted(async () => {
     </v-calendar>
   </v-container>
 </template>
-
-<style scoped>
-::v-deep(.v-overlay__content) {
-  background: white !important;
-}
-
-::v-deep(.v-calendar-weekly__day-content) {
-  height: 100%;
-}
-
-.text-truncate {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis !important;
-}
-
-.tooltip-card {
-  width: 100%;
-  padding: 0 auto;
-  background: white;
-  color: black;
-  border-radius: 4px;
-  word-wrap: break-word;
-}
-</style>

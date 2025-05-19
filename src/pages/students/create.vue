@@ -147,7 +147,7 @@ const onSubmit = () => {
 };
 </script>
 <template>
-  <v-container class="h-100 pa-2">
+  <v-container fluid class="h-100 pa-2">
     <v-card class="d-flex flex-column pa-2 ga-2">
       <div class="d-flex ga-2 align-center">
         <div class="h-100" @click="navigateTo(SCHOOL_ROUTE.STUDENTS)">

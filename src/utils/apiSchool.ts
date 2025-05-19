@@ -68,6 +68,7 @@ class ApiSchool {
 
     let headers = {
       Accept: "application/json",
+      "Content-type": "application/json",
     };
 
     if (token) {

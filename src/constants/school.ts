@@ -101,3 +101,58 @@ export const SCHEDULE_SESSION_COLOR_ENUM = {
   [SCHEDULE_SESSION_ENUM.AFTERNOON]: "orange",
   [SCHEDULE_SESSION_ENUM.FULL_DAY]: "green",
 };
+
+export const APPLICATION_STATUS_ENUMS = {
+  Created: 0,
+  Pending: 1,
+  Rejected: 2,
+  NeedMoreInfo: 3,
+  Approved: 4,
+  Cancelled: 5,
+};
+
+/**
+ * Driver application
+ */
+export const APPLICATION_STATUS_NAMES = {
+  [APPLICATION_STATUS_ENUMS.Created]: "Đã tạo đơn",
+  [APPLICATION_STATUS_ENUMS.Pending]: "Chờ duyệt đơn",
+  [APPLICATION_STATUS_ENUMS.Rejected]: "Từ chối đơn",
+  [APPLICATION_STATUS_ENUMS.NeedMoreInfo]: "Cần thêm thông tin đơn",
+  [APPLICATION_STATUS_ENUMS.Approved]: "Chấp nhận đơn",
+  [APPLICATION_STATUS_ENUMS.Cancelled]: "Huỷ đơn",
+};
+
+export const APPLICATION_ACTION_ENUMS = {
+  Submit: 1,
+  Update: 2,
+  Cancel: 3,
+  Reject: 4,
+  Approve: 5,
+  RequestMoreInfo: 6,
+  Delete: 7,
+};
+
+export const APPLICATION_ACTION_NAMES = {
+  [APPLICATION_ACTION_ENUMS.Submit]: "Nộp hồ sơ",
+  [APPLICATION_ACTION_ENUMS.Update]: "Cập nhập hồ sơ",
+  [APPLICATION_ACTION_ENUMS.Cancel]: "Hủy hồ sơ",
+  [APPLICATION_ACTION_ENUMS.Reject]: "Từ chối hồ sơ",
+  [APPLICATION_ACTION_ENUMS.Approve]: "Chấp nhận hồ sơ",
+  [APPLICATION_ACTION_ENUMS.RequestMoreInfo]: "Yêu cầu thêm thông tin",
+  [APPLICATION_ACTION_ENUMS.Delete]: "Xóa hồ sơ",
+};
+
+export const TRIP_STATUS_ENUMS = {
+  NotStarted: 0,
+  InProgress: 1,
+  Completed: 2,
+  Cancelled: 3,
+};
+
+export const TRIP_STATUS_NAMES = {
+  [TRIP_STATUS_ENUMS.NotStarted]: "Chưa xuất phát",
+  [TRIP_STATUS_ENUMS.InProgress]: "Đang trong chuyến",
+  [TRIP_STATUS_ENUMS.Completed]: "Hoàn thành",
+  [TRIP_STATUS_ENUMS.Cancelled]: "Huỷ chuyến",
+};

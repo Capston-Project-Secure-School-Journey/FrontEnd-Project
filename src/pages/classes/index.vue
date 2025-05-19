@@ -72,7 +72,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <v-container class="w-100 d-flex ga-2 flex-column">
+  <v-container fluid class="w-100 d-flex ga-2 flex-column">
     <div class="w-100 d-flex justify-space-between">
       <h2>
         {{ pageName }}

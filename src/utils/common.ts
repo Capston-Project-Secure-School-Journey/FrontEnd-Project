@@ -2,11 +2,13 @@ import { ALLOW_SIZE_IMAGE, ALLOW_TYPE_IMAGE } from "~/constants/common";
 import {
   SCHEDULE_SESSION_COLOR_ENUM,
   SCHEDULE_SESSION_ENUM,
+  SCHEDULE_SESSION_NAME,
 } from "~/constants/school";
 import type {
   EventDisplayEntity,
   ScheduleMonthEntity,
 } from "~/entities/school/schedule";
+import type { BasicTripEntity } from "~/entities/school/trip";
 
 /**
  * Delay function
@@ -221,4 +223,54 @@ export const mappingSchedule = (scheduleMonth: ScheduleMonthEntity) => {
 
     return eventsMonth;
   }
+};
+
+export const mappingTrip = (data: BasicTripEntity[]) => {
+  const eventsMonth: EventDisplayEntity[] = [];
+  Object.values(data).forEach((basicTrip) => {
+    Object.values(basicTrip)
+      .flat()
+      .forEach((trip) => {
+        let start = new Date();
+        let end = new Date();
+        if (trip.sessionType === SCHEDULE_SESSION_ENUM.MORNING) {
+          start = new Date(`${trip.date} 7:00`);
+          end = new Date(`${trip.date} 12:00`);
+        } else if (trip.sessionType === SCHEDULE_SESSION_ENUM.AFTERNOON) {
+          start = new Date(`${trip.date} 13:00`);
+          end = new Date(`${trip.date} 17:00`);
+        } else {
+          start = new Date(trip.date);
+          end = new Date(trip.date);
+        }
+
+        const event: EventDisplayEntity = {
+          title: [
+            `Chuyến đi buổi ${
+              SCHEDULE_SESSION_NAME[
+                trip.sessionType as keyof typeof SCHEDULE_SESSION_NAME
+              ]
+            }`,
+          ],
+          start,
+          end,
+          allDay: trip.sessionType === SCHEDULE_SESSION_ENUM.FULL_DAY,
+          color:
+            SCHEDULE_SESSION_COLOR_ENUM[
+              trip.sessionType as keyof typeof SCHEDULE_SESSION_COLOR_ENUM
+            ],
+          note: `Số chuyến: ${trip.numberOfTrips} với số học sinh: ${trip.numberOfStudents}`,
+        };
+
+        eventsMonth.push(event);
+      });
+
+    // Object.values(basicTrip).forEach((trips) => {
+    //   trips.forEach((trip) => {
+    //
+    //   });
+    // });
+  });
+
+  return eventsMonth;
 };

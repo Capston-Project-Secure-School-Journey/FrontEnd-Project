@@ -46,7 +46,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <v-container>
+  <v-container fluid>
     <v-snackbar
       id="updateSuccessForm"
       v-model="updateStatus"
