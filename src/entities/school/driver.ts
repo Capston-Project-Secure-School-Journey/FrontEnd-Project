@@ -43,7 +43,7 @@ export interface DriverTripEntity {
   journeyStatus?: number;
   numberOfStudents?: number;
   numberOfCurrentStudents?: number;
-  bestRoute?: object;
+  bestRoute: google.maps.DirectionsResult;
   students: StudentInTripEntity[];
 }
 

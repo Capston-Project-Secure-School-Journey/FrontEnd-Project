@@ -1,11 +1,11 @@
 export const getListTripCalendarApi = (date: string): Promise<any> => {
-  return apiSchool.get("/pickup-schedules/pickup-schedule-view", { date });
+  return apiSchool.get("/shuttle-schedules/pickup-schedule-view", { date });
 };
 
 export const getDetailPickupScheduleApi = (date: string): Promise<any> => {
-  return apiSchool.get("/pickup-schedules", { date });
+  return apiSchool.get("/shuttle-schedules", { date });
 };
 
 export const getDetailTripHasListStudentApi = (id: string): Promise<any> => {
-  return apiSchool.get(`/pickup-schedules/${id}`);
+  return apiSchool.get(`/shuttle-schedules/${id}`);
 };

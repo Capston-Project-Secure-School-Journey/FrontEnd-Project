@@ -18,8 +18,6 @@ const students = computed(
   () => schoolTripStore.driverTripsHasStudent?.students
 );
 
-const students1 = computed(() => schoolTripStore.driverTripsHasStudent);
-
 const headerStudentTable = [
   {
     title: "Họ và tên",
@@ -53,6 +51,7 @@ const headerStudentTable = [
   },
   { title: "Chi tiết", key: "actions" },
 ];
+const routes = computed(() => schoolTripStore.driverTripsHasStudent?.bestRoute);
 
 const mapRef = ref();
 const directionsService = ref<any>(null);
