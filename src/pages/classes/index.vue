@@ -4,12 +4,14 @@ import {
   PAGE_LIMIT_DEFAULT,
   SORT_DIRECTION,
   PAGE_SIZE_OPTIONS,
+  DEBOUNCE_TIME,
 } from "~/constants/common";
 import { SCHOOL_ROUTE } from "~/constants/route";
 import type { QueryParamEntity } from "~/entities/common";
 import type { ClassCommonEntity } from "~/entities/school/class";
 import { ClassSchoolStore } from "~/stores/school/class";
 import { SchoolMetaDataStore } from "~/stores/school/metadata";
+import { isEmpty, debounce } from "lodash-es";
 
 const pageName = "Quản lý lớp học";
 
@@ -18,6 +20,8 @@ definePageMeta({
   middleware: "auth-school",
   name: pageName,
 });
+
+document.title = pageName;
 
 const classSchoolStore = ClassSchoolStore();
 const schoolMetaDataStore = SchoolMetaDataStore();
@@ -35,11 +39,15 @@ const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
   direction: SORT_DIRECTION.ASC,
-  sortBy: "name",
 });
 
+const searchName = ref<string>();
+
+const handleSearchClass = debounce(async (className: string) => {
+  await classSchoolStore.getListClass({ className });
+}, DEBOUNCE_TIME);
+
 const headers = [
-  { title: "Mã", key: "id", value: "id" },
   { title: "Lớp", key: "className", value: "className" },
   {
     title: "Khối",
@@ -48,7 +56,7 @@ const headers = [
       grades?.value.filter((grade) => grade.id === item.grade)[0].name,
   },
   { title: "Số lượng", key: "numberOfStudent", value: "numberOfStudent" },
-  { title: "Chi tiết", key: "actions" },
+  { title: "Chi tiết", key: "actions", sortable: false },
 ];
 
 watch(
@@ -92,6 +100,38 @@ onMounted(async () => {
         :items="classes"
         :items-per-page="queryParamEntity.limit"
       >
+        <template v-slot:top>
+          <v-row class="d-flex pa-2 ga-2">
+            <v-col class="pa-2">
+              <v-text-field
+                label="Tìm kiếm giáo viên"
+                v-model="searchName"
+                name="searchTeacher"
+                append-inner-icon="mdi-account-search"
+                clearable
+                v-on:update:model-value="(e) => handleSearchClass(e)"
+              />
+            </v-col>
+            <v-col>
+              <v-select
+                label="Chọn khối"
+                :items="grades"
+                item-title="name"
+                item-value="id"
+                clearable
+                @update:model-value="
+                  async (e) => {
+                    await classSchoolStore.getListClass({
+                      ...queryParamEntity.value,
+                      grade: e,
+                    });
+                  }
+                "
+              />
+            </v-col>
+          </v-row>
+        </template>
+
         <template v-slot:loading>
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
         </template>
@@ -119,7 +159,12 @@ onMounted(async () => {
               <v-pagination
                 v-model="queryParamEntity.page"
                 class="w-100"
-                :length="Math.ceil(metaData.total / queryParamEntity.limit)"
+                :length="
+                  Math.ceil(
+                    (metaData.total || 0) /
+                      (queryParamEntity.limit || PAGE_LIMIT_DEFAULT)
+                  )
+                "
               >
               </v-pagination>
             </v-col>

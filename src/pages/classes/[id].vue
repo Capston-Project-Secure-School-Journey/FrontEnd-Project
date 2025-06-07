@@ -3,6 +3,7 @@ import { MODE_FORM_UPDATE } from "~/constants/common";
 import ClassForm from "~/components/school/ClassForm.vue";
 import { ClassSchoolStore } from "~/stores/school/class";
 import type { ClassEntity } from "~/entities/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 
 const pageName: string = "Thông tin chi tiết lớp học";
 
@@ -12,14 +13,17 @@ definePageMeta({
   name: pageName,
 });
 
+document.title = pageName;
+
 const classSchoolStore = ClassSchoolStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
 const route = useRoute();
 const classId = route.params.id;
 const errors = computed(() => classSchoolStore.errors);
 const isLoading = computed(() => classSchoolStore.isLoading);
 const isSucceed = computed(() => classSchoolStore.isSucceed);
 const classDetail = computed(() => classSchoolStore.class);
-const grades = computed(() => classSchoolStore.grades);
+const grades = computed(() => schoolMetaDataStore.grades);
 const updateStatus = ref<boolean>(false);
 
 const submit = async (data: ClassEntity) => {
@@ -33,12 +37,12 @@ const submit = async (data: ClassEntity) => {
 };
 
 onMounted(async () => {
-  await classSchoolStore.getGradeList();
+  await schoolMetaDataStore.getDataGradeList();
   await classSchoolStore.getDetailClass(classId);
 });
 </script>
 <template>
-  <v-container>
+  <v-container fluid>
     <v-snackbar
       id="updateSuccessForm"
       v-model="updateStatus"

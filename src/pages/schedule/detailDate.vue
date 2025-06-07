@@ -38,11 +38,6 @@ const getDetailSchedule = async () => {
 
 const scheduleDateHeaders = [
   {
-    title: "Mã lớp",
-    key: "classId",
-    value: "classId",
-  },
-  {
     title: "Lớp",
     key: "className",
     value: "className",

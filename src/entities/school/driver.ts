@@ -4,7 +4,9 @@ export interface DriverApplicationEntity {
   requestedDate?: string;
   requestStatus?: number;
   driverId?: string;
+  driverName?: string;
   approvedBy?: string;
+  approvedByName?: string;
   vehicleType?: string;
   licenseNumber?: string;
   seatingCapacity: number;
@@ -32,19 +34,38 @@ export interface DriverInformationImageEntity {
 export interface DriverTripEntity {
   id?: string;
   sessionType?: number;
+  type?: number;
   date?: string;
   driverId?: string;
   driverName?: string;
   driverAvatar?: string;
+  driverPhoneNumber?: string;
   vehicleType?: string;
   driverGender?: number;
   licenseNumber?: string;
   isAllNotesRead?: boolean;
   journeyStatus?: number;
   numberOfStudents?: number;
-  numberOfCurrentStudents?: number;
-  bestRoute: google.maps.DirectionsResult;
+  numberOfPickedUpStudents?: number;
+  numberOfDroppedOffStudents?: number;
+  bestRoute: BestRoute;
   students: StudentInTripEntity[];
+  startJourneyTime?: string;
+  endJourneyTime?: string;
+  pickupEndTime?: string;
+  pickupStartTime?: string;
+}
+
+export interface BestRoute {
+  origin: PointTripEntity;
+  destination: PointTripEntity;
+  wayPoints: PointTripEntity[];
+}
+
+export interface PointTripEntity {
+  fullAddress?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface StudentInTripEntity {
@@ -63,4 +84,5 @@ export interface StudentInTripEntity {
   isDroppedOff?: boolean;
   droppedOffTime?: string;
   skipPickup?: boolean;
+  isSkipUpReason?: string;
 }

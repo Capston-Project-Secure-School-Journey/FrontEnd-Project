@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { SCHOOL_ROUTE } from "~/constants/route";
-import { TRIP_STATUS_NAMES } from "~/constants/school";
+import { SCHEDULE_SESSION_NAME, TRIP_STATUS_NAMES } from "~/constants/school";
 import type { DriverTripEntity } from "~/entities/school/driver";
 import { SchoolTripStore } from "~/stores/school/trip";
 
@@ -17,18 +17,13 @@ const driverTrips = computed(() => schoolTripStore.driverTrips);
 const scheduleDate = ref<Date>(new Date());
 const getDetailSchedule = async () => {
   const dateConverted = convertDateTimeServer(
-    scheduleDate.value.toLocaleDateString().split("T")[0]
+    formatToYYYYMMDD(scheduleDate.value)
   );
 
   await schoolTripStore.getDetailTripCalendar(dateConverted);
 };
 
 const headerDriverTrip = [
-  // {
-  //   title: "Mã",
-  //   key: "id",
-  //   value: "id",
-  // },
   {
     title: "Tài xế",
     key: "driverName",
@@ -46,12 +41,40 @@ const headerDriverTrip = [
       TRIP_STATUS_NAMES[item.journeyStatus as keyof typeof TRIP_STATUS_NAMES],
   },
   {
+    title: "Chuyến",
+    key: "type",
+    value: (item: DriverTripEntity) =>
+      TRIP_STATUS_NAMES[item.type as keyof typeof TRIP_STATUS_NAMES],
+  },
+  {
+    title: "Buổi",
+    key: "sessionType",
+    value: (item: DriverTripEntity) =>
+      SCHEDULE_SESSION_NAME[
+        item.sessionType as keyof typeof SCHEDULE_SESSION_NAME
+      ],
+  },
+  {
+    title: "Thời gian đưa đón",
+    key: "pickAndDrop",
+    value: (item: DriverTripEntity) =>
+      `${item.pickupStartTime} - ${item.pickupEndTime}`,
+  },
+  {
+    title: "Bắt đầu - Kết thúc",
+    key: "startJourneyTime",
+    value: (item: DriverTripEntity) =>
+      `${item.startJourneyTime ? item.startJourneyTime : "N/A"} - ${
+        item.endJourneyTime ? item.endJourneyTime : "N/A"
+      }`,
+  },
+  {
     title: "Tổng số học sinh",
     key: "numberOfStudents",
     value: "numberOfStudents",
   },
   {
-    title: "Tổng số học sinh hiện tại",
+    title: "Tổng số học sinh đưa đón",
     key: "numberOfCurrentStudents",
     value: "numberOfCurrentStudents",
   },
@@ -66,7 +89,7 @@ const showInfoDriver = (item: DriverTripEntity) => {
 };
 
 onMounted(async () => {
-  await schoolTripStore.getDetailTripCalendar("2025-05-19");
+  await getDetailSchedule();
 });
 </script>
 <template>
@@ -100,11 +123,11 @@ onMounted(async () => {
 
       <template v-slot:item.actions="{ item }">
         <div class="d-flex flex-row ga-2">
-          <v-btn
+          <!-- <v-btn
             density="compact"
             icon="mdi-card-account-details-outline"
             :onclick="() => showInfoDriver(item)"
-          ></v-btn>
+          ></v-btn> -->
           <v-btn
             density="compact"
             icon="mdi-account-group"

@@ -96,6 +96,16 @@ export const SCHEDULE_SESSION_OPTIONS: OptionSelect[] = [
   },
 ];
 
+export const TRIP_TYPE_ENUMS = {
+  OUT_BOUND: 0,
+  RETURN: 1,
+};
+
+export const TRIP_TYPE_NAMES = {
+  [TRIP_TYPE_ENUMS.OUT_BOUND]: "Lượt đón",
+  [TRIP_TYPE_ENUMS.RETURN]: "Lượt trả",
+};
+
 export const SCHEDULE_SESSION_COLOR_ENUM = {
   [SCHEDULE_SESSION_ENUM.MORNING]: "indigo",
   [SCHEDULE_SESSION_ENUM.AFTERNOON]: "orange",

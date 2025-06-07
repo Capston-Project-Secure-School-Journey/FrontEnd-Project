@@ -12,6 +12,8 @@ definePageMeta({
   name: pageName,
 });
 
+document.title = pageName;
+
 const tab = ref<string>(defaultTab);
 const schoolDriverSchool = SchoolDriverStore();
 const driverApplications = computed(
@@ -22,7 +24,6 @@ const defaultParams: QueryParamEntity = {
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
   direction: SORT_DIRECTION.ASC,
-  sortBy: "name",
 };
 
 const changeTab = async () => {
@@ -42,7 +43,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <v-container class="w-100 d-flex ga-2 flex-column">
+  <v-container fluid class="w-100 d-flex ga-2 flex-column">
     <div class="w-100 d-flex justify-space-between">
       <h2>
         {{ pageName }}

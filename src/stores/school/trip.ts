@@ -58,7 +58,7 @@ export const SchoolTripStore = defineStore("SchoolTripStore", {
 
       await getDetailPickupScheduleApi(date)
         .then((res) => {
-          this.$state.driverTrips = res;
+          this.$state.driverTrips = res.data;
         })
         .catch((err) => {
           this.$state.errors = err;

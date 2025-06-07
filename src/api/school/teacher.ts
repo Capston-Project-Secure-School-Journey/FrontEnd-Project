@@ -1,4 +1,6 @@
+import { SCHOOL_TOKEN } from "~/constants/authentication";
 import type { TeacherEntity } from "~/entities/school/teacher";
+const config = useRuntimeConfig();
 
 export const getTeacherListApi = (param: Object): Promise<any> => {
   return apiSchool.get("/teachers", param);
@@ -19,7 +21,16 @@ export const uploadAvatarTeacherApi = (
   idTeacher: string,
   formData: FormData
 ): Promise<any> => {
-  return apiSchool.post(`/teachers/${idTeacher}/upload-avatar`, formData);
+  return fetch(
+    `${config.public.API_BASE_URL}/teachers/${idTeacher}/upload-avatar`,
+    {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: getToken(SCHOOL_TOKEN),
+      },
+    }
+  );
 };
 
 export const getDetailTeacherApi = (id: string): Promise<any> => {

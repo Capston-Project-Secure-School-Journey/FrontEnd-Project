@@ -53,6 +53,28 @@ export const convertDateTimeServer = (dateStr: string) => {
   return new Intl.DateTimeFormat("en-CA", options).format(date);
 };
 
+export const formatToYYYYMMDD = (value: string | Date): string => {
+  const date = new Date(value);
+
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Lưu ý: getMonth() trả từ 0–11
+  const day = date.getDate().toString().padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${year}/${month}/${day}`;
+};
+
+export const getTimeTrip = (timeStr: string) => {
+  const hour = new Date(timeStr).getHours();
+
+  return new Date(timeStr).toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  });
+};
+
 export const convertDateTimeHours = (dateStr: string) => {};
 
 /**

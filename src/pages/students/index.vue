@@ -6,6 +6,7 @@ import {
   SORT_DIRECTION,
   PAGE_SIZE_OPTIONS,
   SNACKBAR_INFO_STATUS,
+  DEBOUNCE_TIME,
 } from "~/constants/common";
 import CopyBlock from "~/components/common/CopyBlock.vue";
 import {
@@ -39,19 +40,14 @@ const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
   direction: SORT_DIRECTION.ASC,
-  sortBy: "name",
 });
 
 const headers = [
   {
-    title: "Mã",
-    key: "id",
-    value: "id",
-  },
-  {
     title: "Họ và Tên",
     key: "name",
     value: (item: StudentCommonEntity) => `${item.firstName} ${item.lastName}`,
+    sortable: false,
   },
   {
     title: "Lớp",
@@ -63,14 +59,16 @@ const headers = [
     key: "gender",
     value: (item: StudentCommonEntity) =>
       GENDER_NAME[item.gender as keyof typeof GENDER_NAME],
+    sortable: false,
   },
   {
     title: "Ngày sinh",
     key: "dateOfBirth",
     value: (item: StudentCommonEntity) =>
       item.dateOfBirth?.toString().split("T")[0],
+    sortable: false,
   },
-  { title: "Chi tiết", key: "actions" },
+  { title: "Chi tiết", key: "actions", sortable: false },
 ];
 
 watch(
@@ -112,7 +110,7 @@ const handleSearchClass = debounce((name: string) => {
   if (!isEmpty(name)) {
     schoolMetaDataStore.getDataClassList(name);
   }
-}, 500);
+}, DEBOUNCE_TIME);
 
 const handleChangeSelectedSearchClass = async () => {
   if (selectedClass.value?.id) {
@@ -129,8 +127,6 @@ const handleChangeSelectedSearchClass = async () => {
 };
 
 watch(searchClass, (newSearch) => {
-  console.log(newSearch);
-
   handleSearchClass(newSearch);
 });
 

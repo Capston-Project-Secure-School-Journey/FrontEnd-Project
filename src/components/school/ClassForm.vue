@@ -20,6 +20,7 @@ import {
   updateClassSchema,
 } from "~/schemas/school/class.schema";
 import { ClassSchoolStore } from "~/stores/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 import { TeacherSchoolStore } from "~/stores/school/teacher";
 
 interface ClassFormProps {
@@ -44,18 +45,16 @@ const [numberOfStudent] = defineField("numberOfStudent");
 
 const classSchoolStore = ClassSchoolStore();
 const teacherSchoolStore = TeacherSchoolStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
 const teachers = computed(() => teacherSchoolStore.teachers);
 const isLoading = computed(() => classSchoolStore.isLoading);
+const isLoadingMeta = computed(() => schoolMetaDataStore.isLoading);
 const isSucceed = computed(() => classSchoolStore.isSucceed);
+const isSucceedMeta = computed(() => schoolMetaDataStore.isSucceed);
 const gradeSelected = ref();
 
 /** For search teacher */
 const headers = [
-  {
-    title: "Mã",
-    key: "id",
-    value: "id",
-  },
   {
     title: "Họ và Tên",
     key: "name",
@@ -79,11 +78,12 @@ const headers = [
   },
   { title: "Chi tiết", key: "actions" },
 ];
+
 const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
   direction: SORT_DIRECTION.ASC,
-  sortBy: "name",
+  sortBy: "id",
 });
 const metaDataTeacher = computed(() => teacherSchoolStore.metaData);
 const selectedTeacher = ref<OptionSelect[]>([]);
@@ -148,6 +148,7 @@ const onSubmit = handleSubmit(async () => {
     const managedTeacher: ManagerTeacher = {
       managedTeacherId: String(_.id),
     };
+
     return managedTeacher;
   });
 
@@ -273,7 +274,7 @@ onMounted(() => {
           :items-per-page="queryParamEntity.limit"
         >
           <template v-slot:top>
-            <h3>Keets qua tim kiem</h3>
+            <h3>Kết quả tìm kiếm</h3>
           </template>
           <template v-slot:item.actions="{ item }">
             <div class="d-flex ga-2">
@@ -293,7 +294,12 @@ onMounted(() => {
             <div class="text-center pt-2">
               <v-pagination
                 v-model="queryParamEntity.page"
-                :length="Math.ceil(metaDataTeacher.total / PAGE_LIMIT_DEFAULT)"
+                :length="
+                  Math.ceil(
+                    (metaDataTeacher.total || 0) /
+                      (metaDataTeacher.pageSize || PAGE_LIMIT_DEFAULT)
+                  )
+                "
               ></v-pagination>
             </div>
           </template>

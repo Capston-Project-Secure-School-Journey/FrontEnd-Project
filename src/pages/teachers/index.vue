@@ -37,11 +37,6 @@ const queryParamEntity = ref<QueryParamEntity>({
 
 const headers = [
   {
-    title: "Mã",
-    key: "id",
-    value: "id",
-  },
-  {
     title: "Họ và Tên",
     key: "name",
     value: (item: TeacherCommonEntity) => `${item.firstName} ${item.lastName}`,
@@ -61,8 +56,9 @@ const headers = [
     title: "Số điện thoại",
     key: "phoneNumber",
     value: "phoneNumber",
+    sortable: false,
   },
-  { title: "Chi tiết", key: "actions" },
+  { title: "Chi tiết", key: "actions", sortable: false },
 ];
 
 const copyStatus = ref<SnackbarProp>({

@@ -11,6 +11,8 @@ definePageMeta({
   name: pageName,
 });
 
+document.title = pageName;
+
 const schoolMetaDataStore = SchoolMetaDataStore();
 const grades = computed(() => schoolMetaDataStore.grades);
 
@@ -19,7 +21,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <v-container class="h-100 pa-2">
+  <v-container fluid>
     <ClassForm
       v-if="grades.length > 0"
       :mode="MODE_FORM_CREATE"

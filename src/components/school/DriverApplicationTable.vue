@@ -36,9 +36,9 @@ const queryParamEntity = ref<ExtendQueryParamEntity>({
 
 const headers = [
   {
-    title: "Mã",
-    key: "id",
-    value: "id",
+    title: "Họ và tên",
+    key: "driverName",
+    value: "driverName",
   },
   {
     title: "Ngày",
@@ -57,13 +57,14 @@ const headers = [
             item.requestStatus as keyof typeof APPLICATION_STATUS_NAMES
           ]
         : "N/A",
+    sortable: false,
   },
   {
     title: "Chấp thuận bởi",
-    key: "approvedBy",
-    value: "approvedBy",
+    key: "approvedByName",
+    value: "approvedByName",
   },
-  { title: "Chi tiết", key: "actions" },
+  { title: "Chi tiết", key: "actions", sortable: false },
 ];
 
 // onMounted(() => {

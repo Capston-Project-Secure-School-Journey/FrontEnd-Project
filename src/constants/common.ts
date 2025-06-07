@@ -9,12 +9,16 @@ export const MODE_FORM_UPDATE = "UPDATE";
 /**
  * Paginate
  */
-export const PAGE_LIMIT_DEFAULT: number = 10;
+export const PAGE_LIMIT_DEFAULT: number = 15;
 export const SORT_DIRECTION = {
-  ASC: "asc",
-  DESC: "desc",
+  ASC: "ASC",
+  DESC: "DESC",
 };
 export const PAGE_SIZE_OPTIONS = [5, 10, 25, 50];
+
+export const DEBOUNCE_TIME = 500;
+
+export const MAX_LENGTH_SEARCH = 50;
 
 /**
  * Gender

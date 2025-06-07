@@ -22,7 +22,7 @@ definePageMeta({
   name: pageName,
 });
 const route = useRoute();
-const driverApplicationId = route.params.id;
+const driverApplicationId = route.params.id as string;
 const schoolDriverStore = SchoolDriverStore();
 const isLoading = computed(() => schoolDriverStore.isLoading);
 const isSucceed = computed(() => schoolDriverStore.isSucceed);
@@ -94,7 +94,7 @@ onMounted(async () => {
 });
 </script>
 <template>
-  <v-container>
+  <v-container fluid>
     <div class="d-flex ga-2 align-center">
       <div class="h-100" @click="navigateTo(SCHOOL_ROUTE.DRIVERS)">
         <v-icon>mdi-arrow-left</v-icon>

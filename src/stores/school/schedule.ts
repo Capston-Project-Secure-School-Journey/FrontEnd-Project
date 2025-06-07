@@ -89,7 +89,7 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
 
       await getDetailScheduleDateApi(date)
         .then((result) => {
-          this.$state.scheduleData = result;
+          this.$state.scheduleData = result.data;
         })
         .catch((err) => {
           this.$state.errors = err.data;
