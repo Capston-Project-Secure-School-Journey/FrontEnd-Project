@@ -13,15 +13,15 @@ definePageMeta({
   middleware: ["auth-guest-school"],
 });
 
-const store = SchoolAuthStore();
-const isLoading = computed(() => store.isLoading);
-const isSucceed = computed(() => store.isSucceed);
+const schoolAuthStore = SchoolAuthStore();
+const isLoading = computed(() => schoolAuthStore.isLoading);
+const isSucceed = computed(() => schoolAuthStore.isSucceed);
 const { handleSubmit, errors, defineField } = useForm({
   validationSchema: schoolLoginSchema,
 });
 const display = ref<boolean>(false);
 const showPass = ref<boolean>(false);
-const errorsApi = computed(() => store.errors);
+const errorsApi = computed(() => schoolAuthStore.errors);
 
 const [username] = defineField("username");
 const [password] = defineField("password");
@@ -32,26 +32,29 @@ const onSubmit = handleSubmit(async (values) => {
     password: values.password,
   };
 
-  await store.login(schoolLogin);
+  await schoolAuthStore.login(schoolLogin);
 
   if (!isLoading.value && !isSucceed.value && errorsApi.value) {
     display.value = true;
   }
 });
+watch(errorsApi, (val) => {
+  if (val) {
+    display.value = true;
+  }
+});
 </script>
-
 <template>
   <div>
     <v-snackbar id="loginFailed" v-model="display" :location="'top right'">
-      {{ errorsApi?.message || "" }}
+      {{ errorsApi }}
       <template v-slot:actions>
         <v-btn color="pink" variant="text" @click="display = false">
           Close
         </v-btn>
       </template>
     </v-snackbar>
-    <Loading v-if="isLoading" />
-    <div v-else class="d-flex w-100 h-100 justify-center align-center">
+    <div class="d-flex w-100 h-100 justify-center align-center">
       <div
         class="d-flex flex-column pa-4 ga-2 justify-center align-center container-login w-33"
       >

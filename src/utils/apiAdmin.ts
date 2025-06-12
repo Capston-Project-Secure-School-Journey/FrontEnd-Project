@@ -39,7 +39,7 @@ class ApiAdmin {
       },
       async onResponseError({ response }) {
         if (response.status === StatusCode.INTERNAL_SERVER_ERROR) {
-          console.log(`Log status code ${StatusCode.INTERNAL_SERVER_ERROR}`);
+          console.error(`Log status code ${StatusCode.INTERNAL_SERVER_ERROR}`);
           navigateTo("/500");
         } else if (response.status === StatusCode.NOT_FOUND) {
           navigateTo("/404");
@@ -48,23 +48,27 @@ class ApiAdmin {
           setToken(ADMIN_TOKEN, "");
           navigateTo(ADMIN_ROUTE.LOGIN, { external: true });
 
-          return {
+          return Promise.reject({
             statusCode: response._data.statuscode,
             message: response._data.message,
-          };
+          });
+        } else if (response.status === StatusCode.BAD_REQUEST) {
+          const message = response._data.message;
+          const statusCode = response._data.statuscode;
+          return Promise.reject({ message, statusCode });
         } else if (
-          [
-            StatusCode.UNPROCESSABLE_CONTENT,
-            StatusCode.BAD_REQUEST,
-            StatusCode.FORBIDDEN,
-          ].includes(response.status)
+          [StatusCode.UNPROCESSABLE_CONTENT, StatusCode.FORBIDDEN].includes(
+            response.status
+          )
         ) {
-          console.log(`Log status code ${response.status}`);
-          return {
-            statusCode: response._data.statuscode,
-            message: response._data.message,
-            errors: response._data.errors,
-          };
+          console.error(`Log status code ${response.status}`);
+          const message = response._data.errors
+            ?.map((e: any) => e.message)
+            .join("\n");
+
+          const statusCode = response._data.statuscode;
+
+          return Promise.reject({ message, statusCode });
         }
       },
     };

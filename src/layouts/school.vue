@@ -3,12 +3,18 @@ import { USER_TYPE_ENUM } from "~/constants/authentication";
 import { SCHOOL_MENU } from "~/constants/route";
 import type { MenuItemEntity } from "~/entities/common";
 import { SchoolAuthStore } from "~/stores/school/auth";
+import { SchoolApp } from "~/stores/schoolApp";
 import NotificationButton from "~/components/common/NotificationButton.vue";
 
 const schoolAuthStore = SchoolAuthStore();
+const schoolApp = SchoolApp();
 const route = useRoute();
 const isOpen = ref<boolean>(true);
 const menu = ref<MenuItemEntity[]>(SCHOOL_MENU);
+const displayToast = computed(() => schoolApp.displayToast);
+const messageToast = computed(() => schoolApp.message);
+const colorToast = computed(() => schoolApp.color);
+const timeoutToast = computed(() => schoolApp.timeout);
 
 const logout = () => {
   schoolAuthStore.logout(USER_TYPE_ENUM.SCHOOL_ADMIN);
@@ -25,6 +31,21 @@ const logout = () => {
         <v-btn icon="mdi-logout" :onclick="logout"></v-btn>
       </template>
     </v-app-bar>
+
+    <v-snackbar
+      id="schoolApp"
+      v-model="displayToast"
+      :color="colorToast"
+      :location="'top right'"
+      :timeout="timeoutToast"
+    >
+      <span v-html="messageToast"></span>
+      <template v-slot:actions>
+        <v-btn color="primary" variant="text" @click="schoolApp.hiddenToast()">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
 
     <v-navigation-drawer v-model="isOpen">
       <v-list>

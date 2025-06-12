@@ -24,3 +24,11 @@ export const updateDetailScheduleDateApi = (
 export const deleteDetailScheduleDateApi = (id: string): Promise<any> => {
   return apiSchool.delete(`/schedules/${id}`);
 };
+
+export const cloneScheduleDateApi = (data: object): Promise<any> => {
+  return apiSchool.post("/schedules/clone-day-schedule", data);
+};
+
+export const cloneScheduleWeekApi = (data: object): Promise<any> => {
+  return apiSchool.post("/schedules/clone-week-schedule", data);
+};

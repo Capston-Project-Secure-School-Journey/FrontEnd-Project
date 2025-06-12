@@ -9,8 +9,8 @@ import type {
 import {
   APPLICATION_ACTION_ENUMS,
   APPLICATION_ACTION_NAMES,
-  APPLICATION_STATUS_ENUMS,
   APPLICATION_STATUS_NAMES,
+  APPLICATION_ACTION_COLOR_BUTTONS,
 } from "~/constants/school";
 import PreviewImage from "~/components/common/PreviewImage.vue";
 
@@ -26,7 +26,9 @@ const driverApplicationId = route.params.id as string;
 const schoolDriverStore = SchoolDriverStore();
 const isLoading = computed(() => schoolDriverStore.isLoading);
 const isSucceed = computed(() => schoolDriverStore.isSucceed);
+const error = computed(() => schoolDriverStore.errors);
 const driverApplication = computed(() => schoolDriverStore.driverApplication);
+const actions = computed(() => schoolDriverStore.actions);
 const statusHeaders = [
   {
     title: "Thời gian",
@@ -58,6 +60,7 @@ const handlePreviewImage = (src: string) => {
 };
 const currentAction = ref<number>();
 const reason = ref<string>("");
+const updateStatus = ref<boolean>(false);
 
 const actionDriverApplication = async (action: number) => {
   switch (action) {
@@ -86,11 +89,21 @@ const actionDriverApplication = async (action: number) => {
       break;
   }
 
+  if (isSucceed.value && !isLoading.value) {
+    updateStatus.value = true;
+  }
   await schoolDriverStore.getDetailDriverApplication(driverApplicationId);
 };
 
 onMounted(async () => {
   await schoolDriverStore.getDetailDriverApplication(driverApplicationId);
+  await schoolDriverStore.getActionDriverApplication(driverApplicationId);
+});
+
+watch(error, (val) => {
+  if (val) {
+    updateStatus.value = true;
+  }
 });
 </script>
 <template>
@@ -110,6 +123,13 @@ onMounted(async () => {
             >
           </v-row>
           <v-divider />
+
+          <v-list-item>
+            <v-list-item-title>Tên tài xế:</v-list-item-title>
+            <v-list-item-subtitle>{{
+              driverApplication?.driverName
+            }}</v-list-item-subtitle>
+          </v-list-item>
 
           <v-list-item>
             <v-list-item-title>Bằng lái xe số:</v-list-item-title>
@@ -143,49 +163,13 @@ onMounted(async () => {
             <v-list-item-title>Thao tác:</v-list-item-title>
             <div class="d-flex flex-column ga-2">
               <v-btn
-                :disabled="
-                  driverApplication?.requestStatus ===
-                  APPLICATION_STATUS_ENUMS.Rejected
-                "
+                v-for="action in actions"
                 variant="elevated"
-                color="success"
-                @click="
-                  actionDriverApplication(APPLICATION_ACTION_ENUMS.Approve)
-                "
-                >{{
-                  APPLICATION_ACTION_NAMES[APPLICATION_ACTION_ENUMS.Approve]
-                }}</v-btn
-              >
-              <v-btn
-                variant="elevated"
-                color="error"
-                :disabled="
-                  driverApplication?.requestStatus ===
-                  APPLICATION_STATUS_ENUMS.Approved
-                "
-                @click="
-                  actionDriverApplication(APPLICATION_ACTION_ENUMS.Reject)
-                "
-                >{{
-                  APPLICATION_ACTION_NAMES[APPLICATION_ACTION_ENUMS.Reject]
-                }}</v-btn
-              >
-              <v-btn
-                variant="elevated"
-                :disabled="
-                  [
-                    APPLICATION_STATUS_ENUMS.Rejected,
-                    APPLICATION_STATUS_ENUMS.Approved,
-                  ].includes(driverApplication?.requestStatus)
-                "
-                @click="
-                  actionDriverApplication(
-                    APPLICATION_ACTION_ENUMS.RequestMoreInfo
-                  )
-                "
+                :color="APPLICATION_ACTION_COLOR_BUTTONS[action.action as keyof typeof APPLICATION_ACTION_COLOR_BUTTONS]"
+                @click="actionDriverApplication(action.action as number)"
                 >{{
                   APPLICATION_ACTION_NAMES[
-                    APPLICATION_ACTION_ENUMS.RequestMoreInfo
+                    action.action as keyof typeof APPLICATION_ACTION_NAMES
                   ]
                 }}</v-btn
               >

@@ -21,6 +21,7 @@ definePageMeta({
 });
 
 const teacherSchoolStore = TeacherSchoolStore();
+const schoolApp = SchoolApp();
 const teachers = computed(() => teacherSchoolStore.teachers);
 const errors = computed(() => teacherSchoolStore.errors);
 const isLoading = computed(() => teacherSchoolStore.isLoading);
@@ -32,7 +33,6 @@ const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
   limit: PAGE_LIMIT_DEFAULT,
   direction: SORT_DIRECTION.ASC,
-  sortBy: "name",
 });
 
 const headers = [
@@ -61,17 +61,6 @@ const headers = [
   { title: "Chi tiết", key: "actions", sortable: false },
 ];
 
-const copyStatus = ref<SnackbarProp>({
-  status: SNACKBAR_INFO_STATUS,
-  message: "",
-  color: "#FFFFFF",
-  display: false,
-});
-
-const copyToClipboard = (data: SnackbarProp) => {
-  copyStatus.value = data;
-};
-
 const deleteListTeacher = async () => {
   if (selectedTeacher.value.length > 0) {
     await teacherSchoolStore.deleteListTeacher(selectedTeacher.value);
@@ -94,6 +83,12 @@ watch(
 
 onMounted(async () => {
   await teacherSchoolStore.getTeacherList(queryParamEntity.value);
+});
+
+watch(errors, (val) => {
+  if (val) {
+    schoolApp.showToastSuccess(errors.value as string);
+  }
 });
 </script>
 <template>
@@ -132,10 +127,6 @@ onMounted(async () => {
 
         <template v-slot:loading>
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
-        </template>
-
-        <template v-slot:item.id="{ item }">
-          <CopyBlock :text="item.id" @on-display="copyToClipboard" />
         </template>
 
         <template v-slot:item.actions="{ item }">
@@ -178,23 +169,5 @@ onMounted(async () => {
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-snackbar
-      id="copySuccess"
-      v-model="copyStatus.display"
-      :color="copyStatus.color"
-      :location="'top right'"
-    >
-      {{ copyStatus.message }}
-      <template v-slot:actions>
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="copyStatus.display = false"
-        >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>

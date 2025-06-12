@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import DriverApplicationTable from "~/components/school/DriverApplicationTable.vue";
 import { PAGE_LIMIT_DEFAULT, SORT_DIRECTION } from "~/constants/common";
+import { APPLICATION_STATUS_ENUMS } from "~/constants/school";
 import type { QueryParamEntity } from "~/entities/common";
 import { SchoolDriverStore } from "~/stores/school/driver";
 
@@ -51,35 +52,51 @@ onMounted(async () => {
     </div>
     <v-card>
       <v-tabs v-model="tab" @update:modelValue="changeTab">
-        <v-tab value="1">Chờ xét duyệt</v-tab>
-        <v-tab value="4">Đã duyệt</v-tab>
-        <v-tab value="3">Đang chờ phản hồi</v-tab>
+        <v-tab :value="APPLICATION_STATUS_ENUMS.Pending">Chờ xét duyệt</v-tab>
+        <v-tab :value="APPLICATION_STATUS_ENUMS.Approved">Đã duyệt</v-tab>
+        <v-tab :value="APPLICATION_STATUS_ENUMS.NeedMoreInfo"
+          >Đang chờ phản hồi</v-tab
+        >
+        <v-tab :value="APPLICATION_STATUS_ENUMS.CancellationPending"
+          >Đang huỷ</v-tab
+        >
       </v-tabs>
 
       <v-card-text>
         <v-tabs-window v-model="tab">
-          <v-tabs-window-item value="1">
+          <v-tabs-window-item :value="APPLICATION_STATUS_ENUMS.Pending">
             <DriverApplicationTable
               @fetch="fetch"
-              :status="1"
+              :status="APPLICATION_STATUS_ENUMS.Pending"
               :driver-applications="driverApplications"
               :meta-data="metaData"
             />
           </v-tabs-window-item>
 
-          <v-tabs-window-item value="4">
+          <v-tabs-window-item :value="APPLICATION_STATUS_ENUMS.Approved">
             <DriverApplicationTable
               @fetch="fetch"
-              :status="4"
+              :status="APPLICATION_STATUS_ENUMS.Approved"
               :driver-applications="driverApplications"
               :meta-data="metaData"
             />
           </v-tabs-window-item>
 
-          <v-tabs-window-item value="3">
+          <v-tabs-window-item :value="APPLICATION_STATUS_ENUMS.NeedMoreInfo">
             <DriverApplicationTable
               @fetch="fetch"
-              :status="3"
+              :status="APPLICATION_STATUS_ENUMS.NeedMoreInfo"
+              :driver-applications="driverApplications"
+              :meta-data="metaData"
+            />
+          </v-tabs-window-item>
+
+          <v-tabs-window-item
+            :value="APPLICATION_STATUS_ENUMS.CancellationPending"
+          >
+            <DriverApplicationTable
+              @fetch="fetch"
+              :status="APPLICATION_STATUS_ENUMS.CancellationPending"
               :driver-applications="driverApplications"
               :meta-data="metaData"
             />

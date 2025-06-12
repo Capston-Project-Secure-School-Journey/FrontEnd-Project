@@ -12,13 +12,12 @@ import type {
   AdminSchoolCommonEntity,
   AdminSchoolEntity,
 } from "~/entities/admin/school";
-import type { ErrorEntity } from "~/entities/api-error";
 import type { MetaDataEntity } from "~/entities/common";
 
 interface State {
   isLoading: Boolean;
   isSucceed: Boolean;
-  errors: ErrorEntity;
+  errors: string | null;
   schools: AdminSchoolCommonEntity[];
   school: AdminSchoolEntity;
   metaData: MetaDataEntity;
@@ -27,7 +26,7 @@ interface State {
 const defaultState: State = {
   isLoading: false,
   isSucceed: false,
-  errors: {},
+  errors: null,
   schools: [],
   school: {},
   metaData: {},
@@ -56,7 +55,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
           this.$state.schools = result.data as AdminSchoolCommonEntity[];
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isSucceed = true;
@@ -79,7 +78,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -100,7 +99,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
           this.$state.school = result;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -123,8 +122,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
           this.$state.school = result;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isSucceed = true;
@@ -146,7 +144,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
       await updateSchoolAdminPasswordApi(id, data)
         .then(() => {})
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isSucceed = true;
@@ -168,8 +166,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -190,8 +187,7 @@ export const AdminSchoolStore = defineStore("AdminSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

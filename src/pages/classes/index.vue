@@ -24,16 +24,13 @@ definePageMeta({
 document.title = pageName;
 
 const classSchoolStore = ClassSchoolStore();
+const schoolApp = SchoolApp();
 const schoolMetaDataStore = SchoolMetaDataStore();
 const isLoading = computed(() => classSchoolStore.isLoading);
 const classes = computed(() => classSchoolStore.classes);
 const metaData = computed(() => classSchoolStore.metaData);
+const errors = computed(() => classSchoolStore.errors);
 const grades = computed(() => schoolMetaDataStore.grades);
-
-const copyStatus = ref<{
-  status: boolean;
-  message: string;
-}>({ status: false, message: "" });
 
 const queryParamEntity = ref<QueryParamEntity>({
   page: 1,
@@ -67,16 +64,15 @@ watch(
   { deep: true }
 );
 
-const copyToClipboard = (data: string) => {
-  copyStatus.value = {
-    status: true,
-    message: data,
-  };
-};
-
 onMounted(async () => {
   await schoolMetaDataStore.getDataGradeList();
   await classSchoolStore.getListClass(queryParamEntity.value);
+});
+
+watch(errors, (val) => {
+  if (val) {
+    schoolApp.showToastSuccess(errors.value as string);
+  }
 });
 </script>
 <template>
@@ -136,10 +132,6 @@ onMounted(async () => {
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
         </template>
 
-        <template v-slot:item.id="{ item }">
-          <CopyBlock :text="item.id" @on-display="copyToClipboard" />
-        </template>
-
         <template v-slot:item.actions="{ item }">
           <a :href="`${SCHOOL_ROUTE.CLASSES}/${item.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
@@ -172,17 +164,5 @@ onMounted(async () => {
         </template>
       </v-data-table>
     </v-card>
-    <v-snackbar
-      id="copySuccess"
-      v-model="copyStatus.status"
-      :location="'top right'"
-    >
-      {{ copyStatus.message }}
-      <template v-slot:actions>
-        <v-btn color="pink" variant="text" @click="copyStatus.status = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>

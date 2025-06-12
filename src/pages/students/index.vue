@@ -91,16 +91,6 @@ const deleteListStudent = async () => {
   }
 };
 
-const copyStatus = ref<SnackbarProp>({
-  status: SNACKBAR_INFO_STATUS,
-  message: "",
-  color: "#FFFFFF",
-  display: false,
-});
-const copyToClipboard = (data: SnackbarProp) => {
-  copyStatus.value = data;
-};
-
 // Handle search by class
 const selectedClass = ref<OptionSelect>();
 const searchClass = ref<string>("");
@@ -190,10 +180,6 @@ onMounted(async () => {
           <v-skeleton-loader type="table-row@10"></v-skeleton-loader>
         </template>
 
-        <template v-slot:item.id="{ item }">
-          <CopyBlock :text="item.id" @on-display="copyToClipboard" />
-        </template>
-
         <template v-slot:item.actions="{ item }">
           <a :href="`${SCHOOL_ROUTE.STUDENTS}/${item?.id}`">
             <v-icon v-tooltip="'Xem chi tiết'">mdi-arrow-right</v-icon>
@@ -242,23 +228,5 @@ onMounted(async () => {
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-snackbar
-      id="copySuccess"
-      v-model="copyStatus.display"
-      :color="copyStatus.color"
-      :location="'top right'"
-    >
-      {{ copyStatus.message }}
-      <template v-slot:actions>
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="copyStatus.display = false"
-        >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </v-container>
 </template>

@@ -61,7 +61,7 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -84,7 +84,7 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -105,7 +105,7 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -126,8 +126,7 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -147,8 +146,7 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
           this.$state.class = result;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isSucceed = true;
@@ -173,7 +171,7 @@ export const ClassSchoolStore = defineStore("ClassSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

@@ -134,16 +134,16 @@ onMounted(async () => {
               :class="notification.isRead ? '' : 'bg-primary'"
               :onclick="
                 () => {
-                  handleMarkAsReadNotification(notification.id);
+                  handleMarkAsReadNotification(notification.id as string);
                 }
               "
             >
               <v-list-item-title class="font-weight-bold">{{
                 notification.title
               }}</v-list-item-title>
-              <span class="text-body-2">{{ notification.content }}</span>
+              <span class="text-body-2" v-html="notification.content"></span>
               <v-list-item-subtitle class="text-end">{{
-                new Date(notification.createdAt).toLocaleString()
+                new Date(notification.createdAt as string).toLocaleString()
               }}</v-list-item-subtitle>
             </div>
           </v-list-item>

@@ -11,6 +11,7 @@ definePageMeta({
   layout: "guest-school",
   middleware: "auth-guest-admin",
 });
+document.title = "Login";
 
 const store = AdminAuthStore();
 const isLoading = computed(() => store.isLoading);

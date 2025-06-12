@@ -15,6 +15,7 @@ import {
   updateStudentSchema,
 } from "~/schemas/school/student.schema";
 import { ClassSchoolStore } from "~/stores/school/class";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 
 interface ClassFormProps {
   tempId?: number;
@@ -38,6 +39,8 @@ const { defineField, setFieldValue, handleSubmit, errors } = useForm({
 
 // Class
 const classSchoolStore = ClassSchoolStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
+const listClass = computed(() => schoolMetaDataStore.classSearch);
 const classDetail = ref<ClassEntity>();
 const classId = ref<string>();
 const classError = ref<string>("");
@@ -122,15 +125,16 @@ const setupForCreate = () => {
     genderSelected.value =
       GENDER_OPTIONS.filter((_) => _.id === props.student?.gender)?.[0] ??
       GENDER_OPTIONS[0];
-    avatarUrl.value = props.student?.avatarUrl;
+    avatarUrl.value = props.student?.avatarUrl as string;
     setFieldValue("dateOfBirth", props.student.dateOfBirth);
-    dateOfBirthSelected.value = new Date(props.student.dateOfBirth);
+    dateOfBirthSelected.value = new Date(props.student.dateOfBirth as string);
   }
 };
 
 const { formattedTime, start, stop, reset } = useCountdown(30 * 60);
 
-const setupForUpdate = () => {
+const setupForUpdate = async () => {
+  await schoolMetaDataStore.getDataClassList("");
   if (props.student) {
     setFieldValue("firstName", props.student.firstName);
     setFieldValue("lastName", props.student.lastName);
@@ -139,9 +143,9 @@ const setupForUpdate = () => {
       GENDER_OPTIONS.filter((_) => _.id === props.student?.gender)?.[0] ??
       GENDER_OPTIONS[0];
     setFieldValue("dateOfBirth", props.student.dateOfBirth);
-    avatarUrl.value = props.student?.avatarUrl;
+    avatarUrl.value = props.student?.avatarUrl as string;
     classId.value = props.student.classId;
-    dateOfBirthSelected.value = new Date(props.student.dateOfBirth);
+    dateOfBirthSelected.value = new Date(props.student.dateOfBirth as string);
     handleSearchClass();
 
     start();
@@ -257,13 +261,15 @@ onMounted(() => {
       </v-row>
 
       <v-row no-gutters class="ga-2" v-if="props.mode === MODE_FORM_UPDATE">
-        <v-col
-          ><v-text-field
-            label="Mã lớp (Bắt buộc)"
+        <v-col>
+          <v-select
+            label="Chọn lớp"
             v-model="classId"
-            name="classId"
-            :rules="[() => classError || true]"
-          />
+            :items="listClass"
+            item-value="id"
+            item-title="name"
+          >
+          </v-select>
           <v-btn class="mx-2 mb-4" color="primary" :onclick="handleSearchClass">
             Xác nhận và Tìm kiếm
           </v-btn>

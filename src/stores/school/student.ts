@@ -64,7 +64,7 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -87,7 +87,7 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -108,7 +108,7 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -158,7 +158,7 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -179,7 +179,7 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -201,7 +201,7 @@ export const StudentSchoolStore = defineStore("StudentSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {

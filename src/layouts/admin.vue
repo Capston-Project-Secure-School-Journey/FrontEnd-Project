@@ -22,6 +22,12 @@ const messageShow = ref<boolean>(false);
 const snackbarMessage = ref<string>("");
 const snackbarTitle = ref<string>("");
 
+const schoolApp = SchoolApp();
+const displayToast = computed(() => schoolApp.displayToast);
+const messageToast = computed(() => schoolApp.message);
+const colorToast = computed(() => schoolApp.color);
+const timeoutToast = computed(() => schoolApp.timeout);
+
 if (typeof window !== "undefined") {
   const channel = new BroadcastChannel("fcm_channel");
   channel.onmessage = (event) => {
@@ -44,6 +50,21 @@ if (typeof window !== "undefined") {
         <v-btn icon="mdi-logout" :onclick="logout"></v-btn>
       </template>
     </v-app-bar>
+
+    <v-snackbar
+      id="schoolApp"
+      v-model="displayToast"
+      :color="colorToast"
+      :location="'top right'"
+      :timeout="timeoutToast"
+    >
+      <span v-html="messageToast"></span>
+      <template v-slot:actions>
+        <v-btn color="primary" variant="text" @click="schoolApp.hiddenToast()">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
 
     <v-navigation-drawer v-model="isOpen">
       <v-list>

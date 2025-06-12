@@ -1,11 +1,12 @@
 import {
+  cloneScheduleDateApi,
+  cloneScheduleWeekApi,
   createScheduleApi,
   deleteDetailScheduleDateApi,
   getDetailScheduleDateApi,
   getScheduleApi,
   updateDetailScheduleDateApi,
 } from "~/api/school/schedule";
-import type { ErrorEntity } from "~/entities/api-error";
 import type {
   CreateScheduleEntity,
   EventDetailEntity,
@@ -16,7 +17,7 @@ import type {
 interface State {
   isLoading: Boolean;
   isSucceed: Boolean;
-  errors: ErrorEntity | null;
+  errors: string | null;
   schedule: ScheduleMonthEntity;
   events: EventDisplayEntity[];
   scheduleData: EventDetailEntity[];
@@ -52,11 +53,11 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
           this.$state.schedule = result;
           if (this.$state.schedule) {
             const dataEvents = mappingSchedule(this.$state.schedule);
-            this.$state.events = dataEvents;
+            this.$state.events = dataEvents as EventDisplayEntity[];
           }
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -76,7 +77,7 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -92,7 +93,7 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
           this.$state.scheduleData = result.data;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -108,7 +109,7 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -124,7 +125,39 @@ export const SchoolScheduleStore = defineStore("SchoolScheduleStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async cloneScheduleDate(data: object) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await cloneScheduleDateApi(data)
+        .then(() => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.message;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async cloneScheduleWeek(data: object) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await cloneScheduleWeekApi(data)
+        .then(() => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

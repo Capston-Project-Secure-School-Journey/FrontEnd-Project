@@ -13,10 +13,12 @@ definePageMeta({
   name: pageName,
 });
 const route = useRoute();
-const studentId = route.params.id;
+const studentId = route.params.id as string;
 const studentSchoolStore = StudentSchoolStore();
+const schoolApp = SchoolApp();
 const isLoading = computed(() => studentSchoolStore.isLoading);
 const isSucceed = computed(() => studentSchoolStore.isSucceed);
+const errors = computed(() => studentSchoolStore.errors);
 const student = computed(() => studentSchoolStore.student);
 const updateStatus = ref<boolean>(false);
 const display = ref<boolean>(false);
@@ -27,7 +29,7 @@ const submit = async (data: StudentEntity) => {
   await studentSchoolStore.updateStudent(studentId, data);
 
   if (!isLoading.value && isSucceed.value) {
-    updateStatus.value = true;
+    schoolApp.showToastSuccess("Cập nhật dữ liệu thành công");
   }
 };
 
@@ -44,21 +46,15 @@ const deleteStudent = async () => {
 onMounted(async () => {
   await studentSchoolStore.getDetailStudent(studentId);
 });
+
+watch(errors, (val) => {
+  if (val) {
+    schoolApp.showToastSuccess(errors.value as string);
+  }
+});
 </script>
 <template>
   <v-container fluid>
-    <v-snackbar
-      id="updateSuccessForm"
-      v-model="updateStatus"
-      :location="'top right'"
-    >
-      Cập nhật dữ liệu thành công
-      <template v-slot:actions>
-        <v-btn color="pink" variant="text" @click="updateStatus = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
     <div class="d-flex ga-2 align-center">
       <div class="h-100" @click="navigateTo(SCHOOL_ROUTE.STUDENTS)">
         <v-icon>mdi-arrow-left</v-icon>

@@ -40,7 +40,7 @@ export const SchoolNotificationStore = defineStore("SchoolNotificationStore", {
           this.$state.countUnreadNotification = res;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -58,7 +58,7 @@ export const SchoolNotificationStore = defineStore("SchoolNotificationStore", {
         })
         .catch((err) => {
           this.$state.isSucceed = false;
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -74,7 +74,7 @@ export const SchoolNotificationStore = defineStore("SchoolNotificationStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -113,7 +113,7 @@ export const SchoolNotificationStore = defineStore("SchoolNotificationStore", {
           this.$state.countUnreadNotification = 0;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {

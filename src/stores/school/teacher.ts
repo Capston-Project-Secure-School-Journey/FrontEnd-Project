@@ -57,7 +57,7 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
           this.$state.teachers = result.data as TeacherCommonEntity[];
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isSucceed = true;
@@ -80,7 +80,7 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -104,7 +104,7 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
           this.$state.actionsStatus = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
           this.$state.isSucceed = false;
         })
         .finally(() => {
@@ -132,14 +132,11 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
           this.$state.teacher = result;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
-          this.$state.isSucceed = true;
+          this.$state.isLoading = false;
         });
-
-      this.$state.isLoading = false;
     },
 
     /**
@@ -155,8 +152,7 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -177,8 +173,7 @@ export const TeacherSchoolStore = defineStore("TeacherSchoolStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
-          this.$state.isSucceed = false;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

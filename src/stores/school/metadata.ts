@@ -48,7 +48,7 @@ export const SchoolMetaDataStore = defineStore("SchoolMetaDataStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -71,7 +71,7 @@ export const SchoolMetaDataStore = defineStore("SchoolMetaDataStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

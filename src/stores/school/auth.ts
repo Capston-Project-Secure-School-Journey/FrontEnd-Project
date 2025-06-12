@@ -45,6 +45,7 @@ export const SchoolAuthStore = defineStore("SchoolAuthStore", {
       const router = useRouter();
       await loginApi(schoolEntity)
         .then((result) => {
+          this.$state.errors = null;
           const userType = result.userType;
           this.$state.me = result as ResponseAuthEntity;
           if (userType === USER_TYPE_ENUM.ADMIN) {
@@ -62,7 +63,7 @@ export const SchoolAuthStore = defineStore("SchoolAuthStore", {
           }
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

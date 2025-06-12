@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import { SNACKBAR_INFO_STATUS } from "~/constants/common";
 import { SCHOOL_ROUTE } from "~/constants/route";
-import type { OptionSelect } from "~/entities/common";
+import type { OptionSelect, SnackbarProp } from "~/entities/common";
 import { SchoolScheduleStore } from "~/stores/school/schedule";
 const pageName = "Quản lý Lịch học";
 
@@ -10,10 +11,16 @@ definePageMeta({
   name: pageName,
 });
 
+document.title = pageName;
+
 const schoolScheduleStore = SchoolScheduleStore();
+const schoolApp = SchoolApp();
 const today = ref();
 const test = ref();
 const events = computed(() => schoolScheduleStore.events);
+const errors = computed(() => schoolScheduleStore.errors);
+const isLoading = computed(() => schoolScheduleStore.isLoading);
+const isSucceed = computed(() => schoolScheduleStore.isSucceed);
 
 const handleMonthChange = async (newDay: string) => {
   const currentDate = convertDateTimeServer(
@@ -23,7 +30,39 @@ const handleMonthChange = async (newDay: string) => {
   await schoolScheduleStore.getSchedule(currentDate);
 };
 
-const open = ref(false);
+const visibleCloneDateDialog = ref<boolean>(false);
+const isCloneDate = ref<boolean>(true);
+const sourceDate = ref<string>();
+const destinationDate = ref<string>();
+
+const handleCloneDate = async () => {
+  if (!sourceDate.value || !destinationDate.value) {
+    return;
+  }
+
+  if (isCloneDate.value) {
+    let data = {
+      dateSource: formatToYYYYMMDD(sourceDate.value as string),
+      dateDestination: formatToYYYYMMDD(destinationDate.value as string),
+    };
+    await schoolScheduleStore.cloneScheduleDate(data);
+  } else {
+    let data = {
+      weekSource: formatToYYYYMMDD(sourceDate.value as string),
+      weekDestination: formatToYYYYMMDD(destinationDate.value as string),
+    };
+    await schoolScheduleStore.cloneScheduleWeek(data);
+  }
+
+  if (!isLoading.value && isSucceed.value) {
+    schoolApp.showToastSuccess("Sao chép thành công");
+    visibleCloneDateDialog.value = false;
+  } else {
+    schoolApp.showToastError(
+      (errors.value as string) ?? "Sao chép không thành công"
+    );
+  }
+};
 
 onMounted(async () => {
   await schoolScheduleStore.getSchedule(
@@ -37,15 +76,45 @@ onMounted(async () => {
     <v-row class="w-100">
       <v-col>
         <v-btn
-          class="mr-3"
           text="Xem chi tiết"
           color="primary"
           :onclick="() => navigateTo(SCHOOL_ROUTE.DETAIL_DATE)"
         ></v-btn>
       </v-col>
-      <v-col class="d-flex justify-end">
+
+      <v-col class="d-flex justify-end ga-2">
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn color="primary" v-bind="props"> Sao chép lịch </v-btn>
+          </template>
+          <v-list>
+            <v-list-item class="d-flex flex-column">
+              <v-btn
+                variant="flat"
+                :onclick="
+                  () => {
+                    visibleCloneDateDialog = true;
+                    isCloneDate = true;
+                  }
+                "
+                >Sao chép ngày</v-btn
+              >
+            </v-list-item>
+            <v-list-item class="d-flex flex-column">
+              <v-btn
+                variant="flat"
+                :onclick="
+                  () => {
+                    visibleCloneDateDialog = true;
+                    isCloneDate = false;
+                  }
+                "
+                >Sao chép tuần</v-btn
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-btn
-          class="mr-3"
           text="Tạo mới"
           color="primary"
           :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_SCHEDULE)"
@@ -67,7 +136,7 @@ onMounted(async () => {
           <template v-slot:activator="{ props }">
             <v-chip
               v-bind="props"
-              :color="event.color"
+              :color="event.color as string"
               class="w-100 pa-1"
               style="max-width: 150px"
             >
@@ -103,6 +172,41 @@ onMounted(async () => {
         </v-tooltip>
       </template>
     </v-calendar>
+
+    <v-dialog v-model="visibleCloneDateDialog" max-width="50vw">
+      <div class="pa-2 ga-2">
+        <h2>Sao chép lịch theo ngày</h2>
+        <v-date-input
+          label="Ngày gốc"
+          v-model="sourceDate"
+          name="sourceDate"
+          prepend-icon=""
+          prepend-inner-icon="$calendar"
+        ></v-date-input>
+        <v-date-input
+          label="Ngày đích"
+          v-model="destinationDate"
+          name="destinationDate"
+          :min="getMinDate(new Date(), 0, false)"
+          prepend-icon=""
+          prepend-inner-icon="$calendar"
+        ></v-date-input>
+        <div class="d-flex flex-column ga-2">
+          <span
+            >Vui lòng xem lại lịch học trong quá khứ trước khi sao chép
+            lịch.</span
+          >
+          <span v-if="!isCloneDate"
+            >Chọn 1 ngày thuộc tuần đó để định danh là tuần gốc và tuần
+            đích.</span
+          >
+        </div>
+        <div class="d-flex justify-end ga-2">
+          <v-btn :onclick="() => (visibleCloneDateDialog = false)">Huỷ</v-btn>
+          <v-btn color="primary" :onclick="handleCloneDate">Lưu</v-btn>
+        </div>
+      </div>
+    </v-dialog>
   </v-container>
 </template>
 

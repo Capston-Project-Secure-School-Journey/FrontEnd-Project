@@ -6,6 +6,10 @@ export const getDetailDriverApplicationApi = (id: string): Promise<any> => {
   return apiSchool.get(`/driver-approval-applications/${id}`);
 };
 
+export const getActionDriverApplicationApi = (id: string): Promise<any> => {
+  return apiSchool.get(`/driver-approval-applications/${id}/action-can-do`);
+};
+
 export const actionApproveDriverApplicationApi = (
   id: string,
   reason: string
@@ -28,7 +32,10 @@ export const actionRequestMoreInfoDriverApplicationApi = (
   id: string,
   reason: string
 ): Promise<any> => {
-  return apiSchool.put(`/driver-approval-applications/${id}/reject`, {
-    reason,
-  });
+  return apiSchool.put(
+    `/driver-approval-applications/${id}/request-more-info`,
+    {
+      reason,
+    }
+  );
 };

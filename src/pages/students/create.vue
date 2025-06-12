@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { isEmpty, debounce } from "lodash-es";
 import {
+  DEBOUNCE_TIME,
   GENDER_NAME,
   MODE_FORM_CREATE,
   MODE_FORM_UPDATE,
@@ -10,6 +12,8 @@ import { SCHOOL_ROUTE } from "~/constants/route";
 import type { ClassEntity } from "~/entities/school/class";
 import type { StudentEntity } from "~/entities/school/student";
 import { StudentSchoolStore } from "~/stores/school/student";
+import type { OptionSelect } from "~/entities/common";
+import { SchoolMetaDataStore } from "~/stores/school/metadata";
 const pageName = "Tạo mới Học sinh";
 
 definePageMeta({
@@ -24,6 +28,7 @@ interface CreateStudentEntity extends StudentEntity {
 
 const classSchoolStore = ClassSchoolStore();
 const studentSchoolStore = StudentSchoolStore();
+const schoolMetaDataStore = SchoolMetaDataStore();
 const isLoadingAddStudent = computed(() => studentSchoolStore.isLoading);
 const isSucceed = computed(() => studentSchoolStore.isSucceed);
 const classDetail = ref<ClassEntity>();
@@ -31,14 +36,16 @@ const classId = ref<string>();
 const classError = ref<string>("");
 const showModalAdd = ref<boolean>(false);
 const showModalEdit = ref<boolean>(false);
-const handleSearchClass = async () => {
-  await classSchoolStore.getDetailClass(classId.value);
-  classDetail.value = classSchoolStore.class;
-  if (!classDetail.value) {
-    classError.value = "Không tìm thấy Lớp học này vui lòng thử lại";
-    return;
+const resultSearchClasses = computed(() => schoolMetaDataStore.classSearch);
+
+const handleSearchClass = debounce((name: string) => {
+  if (!isEmpty(name)) {
+    schoolMetaDataStore.getDataClassList(name);
   }
-};
+}, DEBOUNCE_TIME);
+
+const selectedClass = ref<OptionSelect>();
+const searchClass = ref<string>("");
 
 const students = ref<CreateStudentEntity[]>([]);
 const currentStudent = ref<CreateStudentEntity>();
@@ -77,6 +84,14 @@ const headers = [
   },
   { title: "Chi tiết", key: "actions" },
 ];
+
+const handleSelectClass = async () => {
+  await classSchoolStore.getDetailClass(selectedClass.value?.id as string);
+  if (classSchoolStore.class) {
+    classDetail.value = classSchoolStore.class;
+    classId.value = selectedClass.value?.id as string;
+  }
+};
 
 const addStudentIntoList = (data: CreateStudentEntity) => {
   if (!data) {
@@ -145,6 +160,17 @@ const onSubmit = () => {
 
   navigateTo(SCHOOL_ROUTE.STUDENTS);
 };
+
+watch(searchClass, (newSearch) => {
+  handleSearchClass(newSearch);
+});
+
+watch(selectedClass, (val) => {
+  if (!val) {
+    classDetail.value = undefined;
+    classId.value = undefined;
+  }
+});
 </script>
 <template>
   <v-container fluid class="h-100 pa-2">
@@ -163,16 +189,15 @@ const onSubmit = () => {
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <div>
-              <strong>1</strong>. Copy mã lớp dán vào ô mã lớp, xem danh sách mã
-              lớp tại đây
+              <strong>1</strong>. Xem danh sách mã lớp tại đây
               <a target="_blank" :href="`${SCHOOL_ROUTE.CLASSES}`"
                 >Danh sách lớp học.</a
               >
             </div>
-            <div><strong>2</strong>. Copy mã lớp dán vào ô mã lớp.</div>
+            <div><strong>2</strong>. Gõ tên lớp học</div>
             <div>
-              <strong>3</strong>. Nhấn gán mã để xác nhận mã lớp hợp lệ, mã lớp
-              hợp lệ sẽ hiện ra thông tin của lớp đó.
+              <strong>3</strong>. Nhấn vào tên lớp học đó để xác nhận lớp hợp
+              lệ, lớp hợp lệ sẽ hiện ra thông tin của lớp đó.
             </div>
             <div>
               <strong>4</strong>. Nhấn vào ô <strong>Thêm học sinh</strong> để
@@ -193,13 +218,27 @@ const onSubmit = () => {
       </v-expansion-panels>
 
       <v-row>
-        <v-col class="d-flex align-center"
-          ><v-text-field
-            label="Mã lớp (Bắt buộc)"
-            v-model="classId"
-            name="classId"
-          />
-          <v-btn class="mx-2 mb-4" color="primary" :onclick="handleSearchClass">
+        <v-col class="d-flex align-center">
+          <v-autocomplete
+            auto-select-first="exact"
+            label="Tìm kiếm theo lớp"
+            item-title="name"
+            item-value="id"
+            v-model="selectedClass"
+            v-model:search="searchClass"
+            :items="resultSearchClasses"
+            chips
+            clearable
+            :multiple="false"
+            no-data-text="Không có dữ liệu"
+            return-object
+          ></v-autocomplete>
+          <v-btn
+            :disabled="!selectedClass"
+            class="mx-2 mb-4"
+            color="primary"
+            :onclick="handleSelectClass"
+          >
             Tìm kiếm
           </v-btn>
         </v-col>

@@ -133,10 +133,12 @@ const handleCreateSchedule = async () => {
 
     await schoolScheduleStore.createSchedule(entity);
 
-    if (!isEmpty(errors.value?.message)) {
+    if (!isEmpty(errors.value)) {
+      console.log(errors.value);
+
       displaySnackQueue.value = true;
-      currentErrorMessage.value = errors.value?.message;
-      errorQueue.value.push(errors.value?.message);
+      currentErrorMessage.value = errors.value as string;
+      errorQueue.value.push(errors.value as string);
     }
   });
 
@@ -174,7 +176,7 @@ const currentErrorMessage = ref<string>("");
 const handleCloseSnackbar = () => {
   displaySnackQueue.value = false;
   if (errorQueue.value.length > 0) {
-    currentErrorMessage.value = errorQueue.value.shift();
+    currentErrorMessage.value = errorQueue.value.shift() as string;
     displaySnackQueue.value = true;
   }
 };

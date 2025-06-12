@@ -19,6 +19,7 @@ definePageMeta({
   name: pageName,
 });
 const schoolScheduleStore = SchoolScheduleStore();
+const schoolApp = SchoolApp();
 const scheduleDate = ref<Date>(new Date());
 const isLoading = computed(() => schoolScheduleStore.isLoading);
 const isSucceed = computed(() => schoolScheduleStore.isSucceed);
@@ -113,7 +114,8 @@ const deleteSchedule = async () => {
       selectedScheduleData.value.id
     );
 
-    await handleSnackbar("Xoá thành công");
+    schoolApp.showToastSuccess("Xoá thành công");
+    await getDetailSchedule();
   }
 };
 
@@ -129,38 +131,19 @@ const handleSnackbar = async (successMessage: string) => {
     return;
   }
 
-  if (!isSucceed.value && errors.value?.message) {
-    snackbarStatus.value = {
-      color: SNACKBAR_COLOR[SNACKBAR_SUCCESS_STATUS],
-      message: errors.value.message,
-      display: true,
-    } as SnackbarProp;
+  if (!isSucceed.value && !isLoading.value) {
+    schoolApp.showToastSuccess(errors.value as string);
   }
 };
+
+watch(errors, (val) => {
+  if (val) {
+    schoolApp.showToastSuccess(errors.value as string);
+  }
+});
 </script>
 <template>
-  <v-container class="w-100 d-flex ga-2 flex-column">
-    <v-snackbar
-      v-model="snackbarStatus.display"
-      :color="snackbarStatus.color"
-      :location="'top right'"
-      :timeout="-1"
-    >
-      {{ snackbarStatus?.message }}
-      <template v-slot:actions>
-        <v-btn
-          color="primary"
-          variant="text"
-          @click="
-            () => {
-              snackbarStatus.display = false;
-            }
-          "
-        >
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+  <v-container fluid class="w-100 d-flex ga-2 flex-column">
     <v-card class="d-flex flex-column pa-2 ga-2">
       <div class="d-flex ga-2 align-center">
         <div class="h-100" @click="navigateTo(SCHOOL_ROUTE.SCHEDULE)">

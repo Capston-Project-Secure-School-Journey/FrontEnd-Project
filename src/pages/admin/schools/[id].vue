@@ -14,8 +14,9 @@ definePageMeta({
 });
 
 const adminSchoolStore = AdminSchoolStore();
+const schoolApp = SchoolApp();
 const route = useRoute();
-const schoolId = route.params.id;
+const schoolId = route.params.id as string;
 const errors = computed(() => adminSchoolStore.errors);
 const isLoading = computed(() => adminSchoolStore.isLoading);
 const isSucceed = computed(() => adminSchoolStore.isSucceed);
@@ -28,7 +29,11 @@ const submit = async (data: AdminSchoolEntity) => {
   await adminSchoolStore.updateSchool(schoolId, data);
 
   if (!isLoading.value && isSucceed.value) {
-    updateStatus.value = true;
+    schoolApp.showToastSuccess("Cập nhật dữ liệu thành công");
+  }
+
+  if (errors.value) {
+    schoolApp.showToastError(errors.value);
   }
 };
 
@@ -45,21 +50,15 @@ const deleteSchool = async () => {
 onMounted(async () => {
   await adminSchoolStore.getDetailSchool(schoolId);
 });
+
+watch(errors, (val) => {
+  if (val) {
+    schoolApp.showToastSuccess(errors.value as string);
+  }
+});
 </script>
 <template>
   <v-container>
-    <v-snackbar
-      id="updateSuccessForm"
-      v-model="updateStatus"
-      :location="'top right'"
-    >
-      Cập nhật dữ liệu thành công
-      <template v-slot:actions>
-        <v-btn color="pink" variant="text" @click="updateStatus = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
     <SchoolForm
       v-if="!isLoading && school"
       :mode="MODE_FORM_UPDATE"

@@ -1,5 +1,7 @@
-import { SCHOOL_TOKEN } from "~/constants/authentication";
-import { SCHOOL_ROUTE } from "~/constants/route";
+import {
+  SCHOOL_LAST_WORKSPACE,
+  SCHOOL_TOKEN,
+} from "~/constants/authentication";
 import * as StatusCode from "~/constants/status-code";
 
 const config = useRuntimeConfig();
@@ -40,24 +42,34 @@ class ApiSchool {
         if (response.status === StatusCode.INTERNAL_SERVER_ERROR) {
           console.log(`Log status code ${StatusCode.INTERNAL_SERVER_ERROR}`);
           navigateTo("/500");
-        } else if (response.status === StatusCode.NOT_FOUND) {
+        } else if (
+          [StatusCode.FORBIDDEN, StatusCode.FORBIDDEN].includes(response.status)
+        ) {
+          localStorage.setItem(SCHOOL_LAST_WORKSPACE, "");
           navigateTo("/404");
         } else if (response.status === StatusCode.UNAUTHENTICATED) {
           console.log(`Log status code ${StatusCode.UNAUTHENTICATED}`);
           setToken(SCHOOL_TOKEN, "");
-          navigateTo(SCHOOL_ROUTE.LOGIN, { external: true });
-          return {
+          // navigateTo(SCHOOL_ROUTE.LOGIN, { external: true });
+          return Promise.reject({
             statusCode: response._data.statuscode,
             message: response._data.message,
-          };
+          });
+        } else if (response.status === StatusCode.BAD_REQUEST) {
+          const message = response._data.message;
+          const statusCode = response._data.statuscode;
+          return Promise.reject({ message, statusCode });
         } else if (
-          [
-            StatusCode.UNPROCESSABLE_CONTENT,
-            StatusCode.BAD_REQUEST,
-            StatusCode.FORBIDDEN,
-          ].includes(response.status)
+          [StatusCode.UNPROCESSABLE_CONTENT].includes(response.status)
         ) {
           console.log(`Log status code ${response.status}`);
+          const message = response._data.errors
+            ?.map((e: any) => e.message)
+            .join("\n");
+
+          const statusCode = response._data.statuscode;
+
+          return Promise.reject({ message, statusCode });
         }
       },
     };

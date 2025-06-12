@@ -3,12 +3,18 @@ import {
   actionApproveDriverApplicationApi,
   actionRejectDriverApplicationApi,
   actionRequestMoreInfoDriverApplicationApi,
+  getActionDriverApplicationApi,
   getDetailDriverApplicationApi,
   getListDriverApplicationApi,
 } from "~/api/school/driver";
 import type { DriverApplicationEntity } from "~/entities/school/driver";
 import type { ErrorEntity } from "~/entities/api-error";
 import type { MetaDataEntity } from "~/entities/common";
+
+interface ApplicationAction {
+  action?: number;
+  actionName?: string;
+}
 
 interface State {
   isLoading: Boolean;
@@ -17,6 +23,7 @@ interface State {
   metaData: MetaDataEntity;
   driverApplications: DriverApplicationEntity[];
   driverApplication: DriverApplicationEntity | null;
+  actions: ApplicationAction[];
 }
 
 const defaultState: State = {
@@ -25,6 +32,7 @@ const defaultState: State = {
   errors: null,
   metaData: {},
   driverApplications: [],
+  actions: [],
   driverApplication: null,
 };
 
@@ -50,7 +58,7 @@ export const SchoolDriverStore = defineStore("SchoolDriverStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -67,7 +75,23 @@ export const SchoolDriverStore = defineStore("SchoolDriverStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async getActionDriverApplication(id: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await getActionDriverApplicationApi(id)
+        .then((res) => {
+          this.$state.actions = res;
+        })
+        .catch((err) => {
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -83,7 +107,7 @@ export const SchoolDriverStore = defineStore("SchoolDriverStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -99,7 +123,7 @@ export const SchoolDriverStore = defineStore("SchoolDriverStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;
@@ -115,7 +139,8 @@ export const SchoolDriverStore = defineStore("SchoolDriverStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err.data;
+          console.log(err);
+          this.$state.errors = err.message;
         })
         .finally(() => {
           this.$state.isLoading = false;

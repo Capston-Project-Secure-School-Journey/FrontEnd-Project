@@ -47,7 +47,7 @@ export const SchoolTripStore = defineStore("SchoolTripStore", {
           this.$state.isSucceed = true;
         })
         .catch((err) => {
-          this.$state.errors = err;
+          this.$state.errors = err.message;
         })
         .finally(() => {});
     },
@@ -61,7 +61,7 @@ export const SchoolTripStore = defineStore("SchoolTripStore", {
           this.$state.driverTrips = res.data;
         })
         .catch((err) => {
-          this.$state.errors = err;
+          this.$state.errors = err.message;
         })
         .finally(() => {});
     },
@@ -75,7 +75,7 @@ export const SchoolTripStore = defineStore("SchoolTripStore", {
           this.$state.driverTripsHasStudent = res;
         })
         .catch((err) => {
-          this.$state.errors = err;
+          this.$state.errors = err.message;
         })
         .finally(() => {});
     },

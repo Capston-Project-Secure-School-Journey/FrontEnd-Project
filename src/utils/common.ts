@@ -60,7 +60,7 @@ export const formatToYYYYMMDD = (value: string | Date): string => {
   const day = date.getDate().toString().padStart(2, "0");
   const year = date.getFullYear();
 
-  return `${year}/${month}/${day}`;
+  return `${year}-${month}-${day}`;
 };
 
 export const getTimeTrip = (timeStr: string) => {

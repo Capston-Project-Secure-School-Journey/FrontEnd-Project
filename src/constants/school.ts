@@ -119,6 +119,7 @@ export const APPLICATION_STATUS_ENUMS = {
   NeedMoreInfo: 3,
   Approved: 4,
   Cancelled: 5,
+  CancellationPending: 6,
 };
 
 /**
@@ -131,6 +132,7 @@ export const APPLICATION_STATUS_NAMES = {
   [APPLICATION_STATUS_ENUMS.NeedMoreInfo]: "Cần thêm thông tin đơn",
   [APPLICATION_STATUS_ENUMS.Approved]: "Chấp nhận đơn",
   [APPLICATION_STATUS_ENUMS.Cancelled]: "Huỷ đơn",
+  [APPLICATION_STATUS_ENUMS.CancellationPending]: "Đang yêu cầu huỷ",
 };
 
 export const APPLICATION_ACTION_ENUMS = {
@@ -141,6 +143,7 @@ export const APPLICATION_ACTION_ENUMS = {
   Approve: 5,
   RequestMoreInfo: 6,
   Delete: 7,
+  RequestCancellation: 8,
 };
 
 export const APPLICATION_ACTION_NAMES = {
@@ -151,6 +154,16 @@ export const APPLICATION_ACTION_NAMES = {
   [APPLICATION_ACTION_ENUMS.Approve]: "Chấp nhận hồ sơ",
   [APPLICATION_ACTION_ENUMS.RequestMoreInfo]: "Yêu cầu thêm thông tin",
   [APPLICATION_ACTION_ENUMS.Delete]: "Xóa hồ sơ",
+  [APPLICATION_ACTION_ENUMS.RequestCancellation]: "Yêu cầu huỷ",
+};
+
+export const APPLICATION_ACTION_COLOR_BUTTONS = {
+  [APPLICATION_ACTION_ENUMS.Reject]: "error",
+  [APPLICATION_ACTION_ENUMS.Cancel]: "error",
+  [APPLICATION_ACTION_ENUMS.Approve]: "success",
+  [APPLICATION_ACTION_ENUMS.RequestMoreInfo]: "info",
+  [APPLICATION_ACTION_ENUMS.Delete]: "error",
+  [APPLICATION_ACTION_ENUMS.RequestCancellation]: "error",
 };
 
 export const TRIP_STATUS_ENUMS = {
