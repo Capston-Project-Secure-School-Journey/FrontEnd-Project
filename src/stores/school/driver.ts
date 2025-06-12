@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import {
   actionApproveDriverApplicationApi,
+  actionCancelDriverApplicationApi,
   actionRejectDriverApplicationApi,
   actionRequestMoreInfoDriverApplicationApi,
   getActionDriverApplicationApi,
@@ -8,7 +9,6 @@ import {
   getListDriverApplicationApi,
 } from "~/api/school/driver";
 import type { DriverApplicationEntity } from "~/entities/school/driver";
-import type { ErrorEntity } from "~/entities/api-error";
 import type { MetaDataEntity } from "~/entities/common";
 
 interface ApplicationAction {
@@ -19,7 +19,7 @@ interface ApplicationAction {
 interface State {
   isLoading: Boolean;
   isSucceed: Boolean;
-  errors: ErrorEntity | null;
+  errors: string;
   metaData: MetaDataEntity;
   driverApplications: DriverApplicationEntity[];
   driverApplication: DriverApplicationEntity | null;
@@ -29,7 +29,7 @@ interface State {
 const defaultState: State = {
   isLoading: false,
   isSucceed: false,
-  errors: null,
+  errors: "",
   metaData: {},
   driverApplications: [],
   actions: [],
@@ -103,6 +103,22 @@ export const SchoolDriverStore = defineStore("SchoolDriverStore", {
       this.$state.isSucceed = false;
 
       await actionApproveDriverApplicationApi(id, reason)
+        .then(() => {
+          this.$state.isSucceed = true;
+        })
+        .catch((err) => {
+          this.$state.errors = err.message;
+        })
+        .finally(() => {
+          this.$state.isLoading = false;
+        });
+    },
+
+    async actionCancelDriverApplication(id: string, reason: string) {
+      this.$state.isLoading = true;
+      this.$state.isSucceed = false;
+
+      await actionCancelDriverApplicationApi(id, reason)
         .then(() => {
           this.$state.isSucceed = true;
         })

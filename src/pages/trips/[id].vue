@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { SCHOOL_ROUTE } from "~/constants/route";
-import { SCHEDULE_SESSION_NAME, TRIP_STATUS_NAMES } from "~/constants/school";
+import {
+  SCHEDULE_SESSION_NAME,
+  TRIP_STATUS_ENUMS,
+  TRIP_STATUS_NAMES,
+} from "~/constants/school";
 import type { StudentInTripEntity } from "~/entities/school/driver";
 import { SchoolTripStore } from "~/stores/school/trip";
 
@@ -196,6 +200,14 @@ onMounted(async () => {
           <strong>{{ detailTrip?.numberOfPickedUpStudents }}</strong>
           -
           <strong>{{ detailTrip?.numberOfDroppedOffStudents }}</strong>
+        </span>
+
+        <span
+          v-if="detailTrip?.journeyStatus === TRIP_STATUS_ENUMS.Cancelled"
+          class="text-left"
+        >
+          Lí do huỷ chuyến:
+          <strong>{{ detailTrip?.cancelReason }}</strong>
         </span>
       </v-col>
     </v-row>

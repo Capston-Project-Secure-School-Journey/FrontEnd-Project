@@ -19,6 +19,15 @@ export const actionApproveDriverApplicationApi = (
   });
 };
 
+export const actionCancelDriverApplicationApi = (
+  id: string,
+  reason: string
+): Promise<any> => {
+  return apiSchool.put(`/driver-approval-applications/${id}/cancel`, {
+    reason,
+  });
+};
+
 export const actionRejectDriverApplicationApi = (
   id: string,
   reason: string

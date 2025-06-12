@@ -54,6 +54,7 @@ export interface DriverTripEntity {
   endJourneyTime?: string;
   pickupEndTime?: string;
   pickupStartTime?: string;
+  cancelReason?: string;
 }
 
 export interface BestRoute {

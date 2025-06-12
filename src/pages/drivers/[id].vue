@@ -24,6 +24,7 @@ definePageMeta({
 const route = useRoute();
 const driverApplicationId = route.params.id as string;
 const schoolDriverStore = SchoolDriverStore();
+const schoolApp = SchoolApp();
 const isLoading = computed(() => schoolDriverStore.isLoading);
 const isSucceed = computed(() => schoolDriverStore.isSucceed);
 const error = computed(() => schoolDriverStore.errors);
@@ -33,7 +34,8 @@ const statusHeaders = [
   {
     title: "Thời gian",
     key: "changedAt",
-    value: (item: HistoryRequest) => new Date(item.changedAt).toLocaleString(),
+    value: (item: HistoryRequest) =>
+      new Date(item.changedAt as string).toLocaleString(),
   },
   {
     title: "Trạng thái trước",
@@ -58,14 +60,19 @@ const handlePreviewImage = (src: string) => {
   currentImage.value = src;
   overlay.value = true;
 };
-const currentAction = ref<number>();
-const reason = ref<string>("");
-const updateStatus = ref<boolean>(false);
 
+const reason = ref<string>("");
 const actionDriverApplication = async (action: number) => {
   switch (action) {
     case APPLICATION_ACTION_ENUMS.Approve:
       await schoolDriverStore.actionApprovalDriverApplication(
+        driverApplicationId,
+        reason.value
+      );
+      break;
+
+    case APPLICATION_ACTION_ENUMS.Cancel:
+      await schoolDriverStore.actionCancelDriverApplication(
         driverApplicationId,
         reason.value
       );
@@ -90,7 +97,7 @@ const actionDriverApplication = async (action: number) => {
   }
 
   if (isSucceed.value && !isLoading.value) {
-    updateStatus.value = true;
+    schoolApp.showToastSuccess("Thao tác thành công");
   }
   await schoolDriverStore.getDetailDriverApplication(driverApplicationId);
 };
@@ -102,7 +109,7 @@ onMounted(async () => {
 
 watch(error, (val) => {
   if (val) {
-    updateStatus.value = true;
+    schoolApp.showToastError(error.value);
   }
 });
 </script>
