@@ -18,6 +18,7 @@ import type { StudentCommonEntity } from "~/entities/school/student";
 import { StudentSchoolStore } from "~/stores/school/student";
 import { SCHOOL_ROUTE } from "~/constants/route";
 import { SchoolMetaDataStore } from "~/stores/school/metadata";
+import { downloadTemplateUploadStudentApi } from "~/api/school/student";
 
 const pageName = "Quản lý Học sinh";
 
@@ -26,6 +27,7 @@ definePageMeta({
   middleware: "auth-school",
   name: pageName,
 });
+document.title = pageName;
 
 const studentSchoolStore = StudentSchoolStore();
 const schoolMetaDataStore = SchoolMetaDataStore();
@@ -116,6 +118,24 @@ const handleChangeSelectedSearchClass = async () => {
   await studentSchoolStore.getListStudent(queryParamEntity.value);
 };
 
+const loadingDownload = ref<boolean>();
+
+const handleDownloadTemplate = async () => {
+  loadingDownload.value = true;
+  const response = await downloadTemplateUploadStudentApi();
+  const url = window.URL.createObjectURL(new Blob([response]));
+  const link = document.createElement("a");
+  link.href = url;
+
+  link.setAttribute("download", "Template student.xlsx");
+  document.body.appendChild(link);
+  link.click();
+
+  link.remove();
+  window.URL.revokeObjectURL(url);
+  loadingDownload.value = false;
+};
+
 watch(searchClass, (newSearch) => {
   handleSearchClass(newSearch);
 });
@@ -130,12 +150,23 @@ onMounted(async () => {
       <h2>
         {{ pageName }}
       </h2>
-      <v-btn
-        class="btn-primary"
-        :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_STUDENTS)"
-      >
-        Tạo mới
-      </v-btn>
+      <div class="d-flex ga-2">
+        <v-btn
+          :disabled="loadingDownload"
+          prepend-icon="mdi-download"
+          class="btn-primary"
+          :onclick="() => handleDownloadTemplate()"
+        >
+          Tải xuống mẫu
+        </v-btn>
+        <v-btn class="btn-primary"> Tải lên </v-btn>
+        <v-btn
+          class="btn-primary"
+          :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_STUDENTS)"
+        >
+          Tạo mới
+        </v-btn>
+      </div>
     </div>
     <v-card class="w-100">
       <v-data-table

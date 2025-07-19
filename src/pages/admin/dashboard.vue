@@ -4,4 +4,6 @@ definePageMeta({
   middleware: "auth-admin",
 });
 </script>
-<template><div>aaaa</div></template>
+<template>
+  <div>Chào mừng tới Ứng Dụng Quản Lý Hành Trình Đưa Đón Học Sinh An Toàn</div>
+</template>

@@ -23,3 +23,7 @@ export const updateClassApi = (id: string, data: ClassEntity): Promise<any> => {
 export const getSearchNameClassApi = (name: string): Promise<any> => {
   return apiSchool.get("/classes/class-combobox", { name });
 };
+
+export const downloadTemplateUploadClassApi = (): Promise<any> => {
+  return apiSchool.get("/classes/template-excel-file");
+};

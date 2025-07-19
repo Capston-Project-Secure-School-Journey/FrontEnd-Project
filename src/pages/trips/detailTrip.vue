@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { SCHOOL_ROUTE } from "~/constants/route";
-import { SCHEDULE_SESSION_NAME, TRIP_STATUS_NAMES } from "~/constants/school";
+import {
+  SCHEDULE_SESSION_NAME,
+  TRIP_STATUS_NAMES,
+  TRIP_TYPE_NAMES,
+} from "~/constants/school";
 import type { DriverTripEntity } from "~/entities/school/driver";
 import { SchoolTripStore } from "~/stores/school/trip";
 
@@ -44,7 +48,7 @@ const headerDriverTrip = [
     title: "Chuyến",
     key: "type",
     value: (item: DriverTripEntity) =>
-      TRIP_STATUS_NAMES[item.type as keyof typeof TRIP_STATUS_NAMES],
+      TRIP_TYPE_NAMES[item.type as keyof typeof TRIP_TYPE_NAMES],
   },
   {
     title: "Buổi",

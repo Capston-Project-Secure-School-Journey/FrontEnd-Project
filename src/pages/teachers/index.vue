@@ -11,6 +11,7 @@ import CopyBlock from "~/components/common/CopyBlock.vue";
 import { type SnackbarProp, type QueryParamEntity } from "~/entities/common";
 import type { TeacherCommonEntity } from "~/entities/school/teacher";
 import { TeacherSchoolStore } from "~/stores/school/teacher";
+import { downloadTemplateUploadTeacherApi } from "~/api/school/teacher";
 
 const pageName = "Quản lý Giáo viên";
 
@@ -72,6 +73,22 @@ const deleteListTeacher = async () => {
     }
   }
 };
+const loadingDownload = ref<boolean>();
+
+const handleDownloadTemplate = async () => {
+  const response = await downloadTemplateUploadTeacherApi();
+
+  const url = window.URL.createObjectURL(new Blob([response]));
+  const link = document.createElement("a");
+  link.href = url;
+
+  link.setAttribute("download", "Template Teacher.xlsx");
+  document.body.appendChild(link);
+  link.click();
+
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
 
 watch(
   () => queryParamEntity.value,
@@ -97,12 +114,23 @@ watch(errors, (val) => {
       <h2>
         {{ pageName }}
       </h2>
-      <v-btn
-        class="btn-primary"
-        :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_TEACHER)"
-      >
-        Tạo mới
-      </v-btn>
+      <div class="d-flex ga-2">
+        <v-btn
+          :disabled="loadingDownload"
+          prepend-icon="mdi-download"
+          class="btn-primary"
+          :onclick="() => handleDownloadTemplate()"
+        >
+          Tải xuống mẫu
+        </v-btn>
+        <v-btn class="btn-primary"> Tải lên </v-btn>
+        <v-btn
+          class="btn-primary"
+          :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_TEACHER)"
+        >
+          Tạo mới
+        </v-btn>
+      </div>
     </div>
     <v-card class="w-100">
       <v-data-table
@@ -148,7 +176,15 @@ watch(errors, (val) => {
               <v-pagination
                 v-model="queryParamEntity.page"
                 class="w-100"
-                :length="Math.ceil(metaData.total / queryParamEntity.limit)"
+                :length="
+                  Math.max(
+                    1,
+                    Math.ceil(
+                      (metaData.total || 0) /
+                        (queryParamEntity.limit || PAGE_LIMIT_DEFAULT)
+                    )
+                  )
+                "
               >
               </v-pagination>
             </v-col>

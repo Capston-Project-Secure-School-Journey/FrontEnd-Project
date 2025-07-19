@@ -45,7 +45,7 @@ watch(errorsApi, (val) => {
 });
 </script>
 <template>
-  <div>
+  <div class="h-screen w-screen">
     <v-snackbar id="loginFailed" v-model="display" :location="'top right'">
       {{ errorsApi }}
       <template v-slot:actions>
@@ -54,7 +54,10 @@ watch(errorsApi, (val) => {
         </v-btn>
       </template>
     </v-snackbar>
-    <div class="d-flex w-100 h-100 justify-center align-center">
+    <div class="position-absolute w-100 h-100 bg-black opacity-50" />
+    <div
+      class="position-absolute d-flex w-100 h-100 justify-center align-center"
+    >
       <div
         class="d-flex flex-column pa-4 ga-2 justify-center align-center container-login w-33"
       >

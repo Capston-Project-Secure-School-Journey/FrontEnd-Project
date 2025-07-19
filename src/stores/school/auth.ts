@@ -79,9 +79,11 @@ export const SchoolAuthStore = defineStore("SchoolAuthStore", {
       switch (userType) {
         case USER_TYPE_ENUM.SCHOOL_ADMIN:
           setToken(SCHOOL_TOKEN, "");
+          setLastWorkspace(SCHOOL_LAST_WORKSPACE, "");
           break;
         case USER_TYPE_ENUM.ADMIN:
           setToken(ADMIN_TOKEN, "");
+          setLastWorkspace(ADMIN_LAST_WORKSPACE, "");
         default:
           break;
       }

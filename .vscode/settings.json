@@ -23,5 +23,6 @@
   "editor.codeActionsOnSave": {
     "source.removeUnusedImports": "explicit"
   },
-  "editor.indentSize": 2
+  "editor.indentSize": 2,
+  "editor.experimental.preferTreeSitter.typescript": true
 }

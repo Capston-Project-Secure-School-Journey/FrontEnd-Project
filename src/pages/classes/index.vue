@@ -12,6 +12,8 @@ import type { ClassCommonEntity } from "~/entities/school/class";
 import { ClassSchoolStore } from "~/stores/school/class";
 import { SchoolMetaDataStore } from "~/stores/school/metadata";
 import { isEmpty, debounce } from "lodash-es";
+import { downloadTemplateUploadClassApi } from "~/api/school/class";
+import UploadModal from "~/components/common/UploadModal.vue";
 
 const pageName = "Quản lý lớp học";
 
@@ -56,6 +58,25 @@ const headers = [
   { title: "Chi tiết", key: "actions", sortable: false },
 ];
 
+const loadingDownload = ref<boolean>();
+
+const handleDownloadTemplate = async () => {
+  loadingDownload.value = true;
+  const response = await downloadTemplateUploadClassApi();
+
+  const url = window.URL.createObjectURL(new Blob([response]));
+  const link = document.createElement("a");
+  link.href = url;
+
+  link.setAttribute("download", "Template Class.xlsx");
+  document.body.appendChild(link);
+  link.click();
+
+  link.remove();
+  window.URL.revokeObjectURL(url);
+  loadingDownload.value = false;
+};
+
 watch(
   () => queryParamEntity.value,
   async (newQueryParamEntity) => {
@@ -81,12 +102,23 @@ watch(errors, (val) => {
       <h2>
         {{ pageName }}
       </h2>
-      <v-btn
-        class="btn-primary"
-        :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_CLASS)"
-      >
-        Tạo mới
-      </v-btn>
+      <div class="d-flex ga-2">
+        <v-btn
+          :disabled="loadingDownload"
+          prepend-icon="mdi-download"
+          class="btn-primary"
+          :onclick="() => handleDownloadTemplate()"
+        >
+          Tải xuống mẫu
+        </v-btn>
+        <UploadModal entity="class" />
+        <v-btn
+          class="btn-primary"
+          :onclick="() => navigateTo(SCHOOL_ROUTE.CREATE_CLASS)"
+        >
+          Tạo mới
+        </v-btn>
+      </div>
     </div>
     <v-card class="w-100">
       <v-data-table

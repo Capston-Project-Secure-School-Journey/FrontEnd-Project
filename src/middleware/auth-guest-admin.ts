@@ -6,7 +6,9 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (token) {
     return navigateTo(
-      getLastWorkspace(ADMIN_LAST_WORKSPACE) ?? ADMIN_ROUTE.DASHBOARD
+      !!getLastWorkspace(ADMIN_LAST_WORKSPACE)
+        ? getLastWorkspace(ADMIN_LAST_WORKSPACE)
+        : ADMIN_ROUTE.DASHBOARD
     );
   }
 });

@@ -44,3 +44,7 @@ export const deleteTeacherApi = (id: string): Promise<any> => {
 export const deleteListTeacherApi = (ids: string[]): Promise<any> => {
   return apiSchool.delete("/teachers", ids);
 };
+
+export const downloadTemplateUploadTeacherApi = (): Promise<any> => {
+  return apiSchool.get("/teachers/template-excel-file");
+};

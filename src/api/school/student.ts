@@ -37,6 +37,10 @@ export const uploadAvatarStudentApi = (
   );
 };
 
+export const downloadTemplateUploadStudentApi = (): Promise<any> => {
+  return apiSchool.get("/students/template-excel-file");
+};
+
 export const deleteStudentApi = (id: string): Promise<any> => {
   return apiSchool.delete(`/students/${id}`);
 };

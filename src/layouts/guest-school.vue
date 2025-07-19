@@ -1,8 +1,6 @@
 <script lang="ts" setup></script>
 <template>
-  <v-container :fluid="true" class="w-screen h-screen background-login"
-    ><slot
-  /></v-container>
+  <div class="w-screen h-screen background-login"><slot /></div>
 </template>
 <style lang="scss" scoped>
 .background-login {
